@@ -7,8 +7,16 @@
   <link rel="stylesheet" href="../../dist/vizicities.css">
 </head>
 <body>
+  <div id="mapSelector" onchange="updateMap()">
+    <select>
+      <option value="StPaulCrimeDataType1_gridc.geojson" selected>St. Paul Crime Type I</option>
+      <option value="StPaulCrimeDataType2_grid.geojson">St. Paul Crime Type II</option>
+      <option value="taxparcels_3dtest.geojson">Top 500 Most Frequent Visitors</option>
+      <option value="audi">Foursquare Restaurant/Bar Checkins</option>
+    </select>
+  </div>
   <div id="world"></div>
-
+  <script src="jquery-3.1.1.min.js"></script>
   <script src="../vendor/three.min.js"></script>
   <script src="../vendor/TweenMax.min.js"></script>
   <script src="../vendor/chroma.min.js"></script>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+  <style>
+    #map {
+      height: 700px;
+      width: 1260px;
+    }
+    .teaname {
+      font-weight: normal;
+      font-size: 16px;
+    }
+    .location {
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .company {
+     font-weight: bold;
+     font-size: 16px;
+     color: "#525252";
+     text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+<div id="map"></div>
+<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+<script type="text/javascript" src="http://maps.stamen.com/js/tile.stamen.js?v1.3.0"></script>
+<script src="https://d3js.org/d3.v4.0.0-alpha.35.min.js"></script>
+<script>
+
+var teaKeys = ["song", "redblossom"];
+
+var r = d3.scaleLinear()
+  .range([15000, 25000]);
+
+var color = d3.scaleOrdinal()
+    .domain(teaKeys)
+    .range(["#6a3d9a", "#e31a1c"]);
+
+var companyName = { "song": "song tea", "redblossom": "red blossom tea" };
+
+var layer = new L.StamenTileLayer("toner");
+var map = new L.Map("map", {
+  center: new L.LatLng(26.4, 115.09), //center: new L.LatLng(28.4, 111.09), //whole map on 15 inch screen
+  zoom: 6,
+  touchZoom: false,
+  scrollWheelZoom: false
+});
+map.addLayer(layer);
+
+var tea_data = {}, remaining = 2;
+d3.csv("song.csv", function(data) {
+  tea_data.song = data;
+  if (!--remaining) draw();
+});
+
+d3.csv("redblossom.csv", function(data) {
+  tea_data.redblossom = data;
+  if (!--remaining) draw();
+});
+
+function draw() {
+  var m = { song: {}, redblossom: {} }; // markers
+  var n = { song: {}, redblossom: {} }; // counters
+  var s = { song: {}, redblossom: {} }; // sizes
+  var r_domain = { min: undefined, max: undefined };
+
+  d3.keys(tea_data).forEach(function(company) {
+    tea_data[company].forEach(function(tea) {
+      if (n[company][tea.location]) {
+        n[company][tea.location] += 1;
+      } else {
+        n[company][tea.location] = 1;
+      }
+    });
+
+    s[company] = d3.extent(d3.values(n[company])); // get r domain sizes
+    if (r_domain.min == undefined) { // initially set it
+      r_domain.min = s[company][0];
+    } else if (s[company][0] < r_domain.min) { // check and re-set if needed
+      r_domain.min = s[company][0];
+    }
+    if (r_domain.max == undefined) {
+      r_domain.max = s[company][1];
+    } else if (s[company][1] > r_domain.max) {
+      r_domain.max = s[company][1];
+    }
+  });
+
+  r.domain([r_domain.min, r_domain.max]);
+
+  // loop again to plot points with radius scaled as a function of the number of teas from that area
+  d3.keys(tea_data).forEach(function(company) {
+    tea_data[company].forEach(function(tea) {
+      if (m[company][tea.location]) {
+        m[company][tea.location]._popup._content += "<div class='teaname'>" + tea.name + "</div>";
+      }
+      else { // draw this circle and plot the tea name on the map
+        m[company][tea.location] = L.circle([tea.latitude, tea.longitude], r(n[company][tea.location]),
+                                   { fillColor: color(company),
+                                     fillOpacity: 0.8,
+                                     color: "black",
+                                     weight: 1,
+                                     opacity: 1
+                                   })
+          .bindPopup("<div class='company'>" + companyName[company] + "</div>" +
+                      "<div class='location'>" + tea.location.split("_").join(", ") +
+                      "</div>" + "<div class='teaname'>" + tea.name + "</div>")
+          //.addTo(map) // uncomment this and comment out the section below to check out the difference without the force layout
+      }
+    });
+
+    var simulation = d3.forceSimulation(tea_data[company])
+      .force("x", d3.forceX(function(d) { return d.latitude; }).strength(1))
+      .force("y", d3.forceY(function(d) { return d.longitude; }).strength(1))
+      .force("collide", d3.forceCollide(.2))
+      .stop();
+
+    for (var i = 0; i < 120; ++i) simulation.tick();
+
+    tea_data[company].forEach(function(tea) {
+      m[company][tea.location]
+        .setLatLng([tea.x, tea.y])
+        .addTo(map);
+    });
+  });
+}
+//d3.select(self.frameElement).style("height", "700px").style("width", "1260px");
+</script> 
