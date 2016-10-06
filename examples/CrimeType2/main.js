@@ -11,7 +11,7 @@ function updateMap() {
 
 
     // St Paul
-    var coords = [44.945345, -93.091978];
+    var coords = [44.952000, -93.094178];
 
     world = VIZI.world('world', {
       skybox: false,
@@ -27,7 +27,7 @@ function updateMap() {
     }).addTo(world);
 
     // Chroma scale for height-based colours
-    var colourScale = chroma.scale('YlOrBr').domain([0,200]);  //update the domain to match the domain of values in our data
+    var colourScale = chroma.scale('YlOrBr').domain([0,316]);  //update the domain to match the domain of values in our data
 
     // Mapzen GeoJSON tile including points, linestrings and polygons
 
@@ -44,7 +44,7 @@ function updateMap() {
     Currently set to use count from osm_buildings json file.
     If testing dthousinginventory.geojson, change this to feature.properties.num_units
     */
-          height = feature.properties.count * 3;
+          height = feature.properties.count * 2;
 
         } else {
           height = 1;
