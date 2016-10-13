@@ -43,9 +43,7 @@ function updateMap() {
     /*column to use for height attribute of the 3d shape,
     Currently set to use count from osm_buildings json file.
     If testing dthousinginventory.geojson, change this to feature.properties.num_units
-    */
-          height = feature.properties.state_val *.0001;
-
+    */   if (feature.properties.state_val>10000000) {height = feature.properties.state_val *.000035;} else {height = feature.properties.state_val*.0001;}
         } else {
           height = 0;
         }
