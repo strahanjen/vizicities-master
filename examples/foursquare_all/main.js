@@ -36,7 +36,8 @@ function updateMap() {
       //below are two more test geosjon layers parcels(polygons) & downtown housing (points)
     //VIZI.geoJSONLayer('taxparcels_3dtest.geojson', {
     //VIZI.geoJSONLayer('dthousinginventory.geojson', {
-      output: true,
+    output: true,
+    interactive: true,
       style: function(feature) {
         var height;
 
@@ -60,6 +61,14 @@ function updateMap() {
           pointColor: colour,  //this is for styling point data
           height: height
         };
+      },
+      onEachFeature: function(feature, layer) {
+        layer.on('click', function(layer, point2d, point3d, intersects) {
+          //var id = layer.feature.properties.LAD11CD;
+          var value = layer.feature.properties.checkins_s;
+
+          console.log(value);
+        });
       },
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://whosonfirst.mapzen.com#License">Who\'s On First</a>.'
     }).addTo(world);
