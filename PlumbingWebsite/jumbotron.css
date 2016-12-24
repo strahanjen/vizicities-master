@@ -54,10 +54,11 @@ color: #ffffff;
 
 .navbar-brand {
 padding: 5px;
+margin-left: -10px;
 }
+
 .logo {
   text-align: center;
-
 }
 
 .logobrand {
