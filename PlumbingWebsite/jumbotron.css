@@ -36,15 +36,20 @@ font-size: 12px;
 
 .jumbotron {
 padding-top: 60px;
-padding-bottom: 40px;
+padding-bottom: 20px;
 margin-bottom: 0px;
 margin-top: 90px;
 }
 
 .jumbotron .h1,.jumbotron h1 {
-font-size: 45px;
-
+font-size: 35px;
 }
+
+.callus {
+color: #0055a5;
+font-size: 20px;
+}
+
 .navbar-default .navbar-brand{
 color: #ffffff;
 }
@@ -67,7 +72,7 @@ color: #ffffff;
 }
 
 .navbar-default .navbar-nav li a:hover {
-color: #ffffff;
+color: #ccc;
 }
 
 .navbar-default{
@@ -95,7 +100,7 @@ float: right;
 }
 
 img {
-width: 300px;
+width: 200px;
 }
 
 .images {
