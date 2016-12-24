@@ -22,13 +22,10 @@ body {
 background-color: #004281;
 }
 
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  /* Set the fixed height of the footer here */
-  height: 50px;
-  background-color: #f5f5f5;
+
+footer {
+color: #666666;
+font-size: 12px;
 }
 
 
