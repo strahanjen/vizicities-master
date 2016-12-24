@@ -53,8 +53,8 @@ color: #ffffff;
 }
 
 .navbar-brand {
-padding: 5px;
-margin-left: -10px;
+padding-top: 7px;
+padding-left: 0px;
 }
 
 .logo {
@@ -77,6 +77,12 @@ color: #ffffff;
 height: 150px;
 color: #ffffff;
 background-color: #555555;
+}
+
+.navbar-toggle{
+margin-right: 10px;
+position:absolute;
+right: 0px;
 }
 
 .navbar-collapse {
