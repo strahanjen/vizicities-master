@@ -54,7 +54,7 @@ color: #ffffff;
 
 .navbar-brand {
 padding: 5px;
-margin-left: -30px;
+margin-left: -15px;
 }
 
 .logo {
@@ -63,7 +63,6 @@ margin-left: -30px;
 
 .logobrand {
 width: 250px;
-
 }
 .navbar-default .navbar-nav li a {
 color: #ffffff;
@@ -83,7 +82,7 @@ background-color: #555555;
 background-color: #555555;
 }
 .container {
-padding-left: 30px;
+padding-left: 20px;
 }
 
 #navbar {
@@ -97,4 +96,8 @@ width: 300px;
 
 .images {
 padding-top: 20px;
+}
+
+.navbar-toggle {
+	margin-right: 10px;
 }
