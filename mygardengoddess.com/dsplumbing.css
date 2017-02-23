@@ -1,0 +1,146 @@
+/* Move down content because we have a fixed navbar that is 50px tall */
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+  font-size: 16px;
+}
+
+.smalltext {font-size: 12px;}
+
+.phcclogo {width: 100px;}
+
+.btn-primary{
+	color: #fff;
+	background-color: #0055a5;
+	border-color: #122b40;
+}
+
+.btn-primary:hover{
+background-color: #004281;
+}
+
+
+footer {
+color: #666666;
+font-size: 12px;
+}
+
+
+/* Custom page CSS
+-------------------------------------------------- */
+/* Not required for template or sticky footer method. */
+
+
+
+.jumbotron {
+padding-top: 60px;
+padding-bottom: 20px;
+margin-bottom: 0px;
+margin-top: 90px;
+background-color:#f3f9fe;
+}
+
+
+
+.jumbotron .h1,.jumbotron h1 {
+font-size: 35px;
+}
+
+.callus {
+color: #0055a5;
+font-size: 20px;
+}
+
+.navbar-default .navbar-brand{
+color: #ffffff;
+}
+
+.navbar-brand {
+padding-top: 7px;
+padding-left: 0px;
+}
+
+.logo {
+  text-align: center;
+}
+
+.logobrand {
+width: 250px;
+
+}
+.navbar-default .navbar-nav li a {
+color: #ffffff;
+background:none;
+}
+
+.navbar-default .navbar-nav li a:hover {
+color: #7bbeff;
+background:none;
+}
+
+
+.navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:focus, .navbar-default .navbar-nav > .active > a:hover {
+	background:none;
+color: #5faaf2;
+}
+
+.navbar-default{
+height: 150px;
+color: #ffffff;
+background-color: #555555;
+}
+
+.navbar-toggle{
+margin-right: 10px;
+position:absolute;
+right: 0px;
+}
+
+.navbar-collapse {
+background-color: #555555;
+}
+.container {
+padding-left: 30px;
+}
+
+#navbar {
+margin-top: 47px;
+float: right;
+}
+
+img {
+width: 240px;
+}
+
+.gallerycomm {
+width: 300px;
+margin-bottom: 20px;
+}
+
+.images {
+padding-top: 20px;
+}
+#residential {
+margin-top: 160px;
+}
+
+#commercial {
+margin-top: 160px;
+}
+
+#about {
+margin-top: 160px;
+}
+.aboutpic {margin-top: 20px;}
+
+#service {
+margin-top: 160px;
+}
+.gallery {margin-bottom: 20px;}

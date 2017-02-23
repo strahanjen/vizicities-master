@@ -1,0 +1,264 @@
+.globalHeader {
+border-top: 10px solid #FCB040;
+}
+
+
+
+body {
+    line-height: 1
+}
+
+ol,
+ul {
+    list-style: none
+}
+
+
+
+
+
+html {
+    overflow-y: scroll
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%
+}
+
+
+
+
+input[type=search]::-webkit-search-cancel-button,
+input[type=search]::-webkit-search-decoration,
+input[type=search]::-webkit-search-results-button,
+input[type=search]::-webkit-search-results-decoration {
+    -webkit-appearance: none
+}
+
+input[type=search] {
+    -webkit-appearance: none;
+    box-sizing: content-box
+}
+
+textarea {
+    overflow: auto;
+    vertical-align: top;
+    resize: vertical
+}
+
+::-moz-focus-inner {
+    border: 0;
+    padding: 0
+}
+
+input::-ms-clear {
+    width: 0;
+    height: 0
+}
+
+html,
+body {
+    height: 100%
+}
+
+body {
+    background: url('../images/textures/lightpaperfibers.png') repeat
+}
+
+
+img {
+    display: block;
+    height: auto;
+    max-width: 100%
+}
+
+.globalHeader {
+    position: relative;
+    z-index: 10
+}
+
+.globalLogo {
+    width: 200px;
+    margin: 0 auto;
+    position: absolute;
+    left: 50%;
+    margin-left: -100px;
+    z-index: 10
+}
+
+.mobileMenuIsOpen .globalLogo {
+    z-index: 1
+}
+
+.globalLogo-text {
+    display: block;
+    text-indent: -9999px
+}
+
+@media (max-width: 799px) {
+    .globalHeader-panel {
+        position: fixed;
+        width: 100%;
+        height: 0;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        z-index: 9;
+        background: #393632;
+        background: rgba(57, 54, 50, 0.98);
+        transition: height 0.6s
+    }
+    .istouch .globalHeader-panel {
+        overflow-y: scroll
+    }
+    .globalHeader-panel.isOpen {
+        height: 100%;
+        min-height: 100%;
+        opacity: 1;
+        transition: height 0.6s;
+        -webkit-animation: fadeInWithHeight 0.6s 1;
+        -ms-animation: fadeInWithHeight 0.6s 1;
+        animation: fadeInWithHeight 0.6s 1
+    }
+    .mobileMenuIsOpen {
+        overflow: hidden
+    }
+
+    .globalNav {
+        position: relative;
+        z-index: 10000;
+        width: 100%;
+        overflow: hidden;
+        padding: 60px 0;
+        opacity: 0;
+        height: 0;
+        margin-top: 10px
+    }
+    .istouch .globalNav {
+        overflow-y: scroll
+    }
+    .globalNav.isOpen {
+        opacity: 1;
+        height: 100%;
+    }
+    .globalNav-list {
+        text-align: center;
+        overflow: hidden;
+        display: block
+    }
+    .globalNav-list>*+* {
+        margin-top: 10px
+    }
+    .globalNav-list a {
+        padding: 6px 0
+    }
+    .globalNav-list a>* {
+        color: #ffffff
+    }
+    .globalNavSocialLink {
+        display: none
+    }
+}
+
+.mobileUtilityMenu {
+    text-align: center;
+    max-width: 350px;
+    margin: 20px auto
+}
+
+@media (min-width: 800px) {
+    .globalNav {
+        width: 100%
+    }
+    .globalNav-list {
+        text-align: center;
+        overflow: hidden;
+        display: block;
+        margin-left: -40px
+    }
+    .globalNav-list>*+* {
+        padding: 18px 10px;
+        display: inline-block
+    }
+    .globalNav-list a {
+        color: #383531;
+        font-size: 14px
+    }
+    .logoSpaceHolder {
+        width: 200px;
+        padding: 0
+    }
+    .globalNavSocialLink .icon:hover,
+    .globalNavSocialLink .scrollToTop:hover:before {
+        color: #a79a7f;
+        transition: color 0.3s
+    }
+    .globalNavSocialLink .icon:after {
+        display: none
+    }
+}
+
+@media (min-width: 1025px) {
+    .globalNav-list {
+        margin-left: -22px
+    }
+    .globalNav-list>*+* {
+        padding: 10px 14px
+    }
+}
+
+.pushRight {
+margin-left: 120px;
+}
+
+.socialList>* {
+    background-color: #383531;
+    display: table;
+    width: 35px;
+    height: 40px;
+    max-width: 100%;
+    text-align: center;
+    margin-bottom: 1px;
+    padding-left: 10px
+}
+
+.socialList>* a {
+    color: #ffffff
+}
+
+.socialList>*>* {
+    display: table-cell;
+    vertical-align: middle
+}
+
+.socialList>*:hover {
+    transition: background-color 0.3s linear;
+    background-color: #a79a7f
+}
+
+.hdg {
+    display: block;
+    text-transform: uppercase;
+    font-family: "presicav", sans-serif;
+    letter-spacing: 0.08em
+}
+
+
+.underlineLinks a>* {
+    display: inline-block;
+    cursor: pointer;
+    padding-bottom: 1px;
+    opacity: 1
+}
+
+.tel {
+    cursor: text !important
+}
+
+@media (min-width: 800px) {
+    .isHidden_tablet {
+        display: none
+    }
+}
