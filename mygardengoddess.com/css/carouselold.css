@@ -48,35 +48,6 @@ border-top: 10px solid #FCB040;
     text-indent: -9999px
 }
 
-/*  Services section */
-.over {
-color: #ffffff;
-position:absolute;
-width:100%;
-text-align:center;
-bottom: 30%;
-right:0;
-left:0;
-z-index:3;
-}
-.col-sm-6, .col-sm-8, .col-sm-12{
-padding-left: 8px;
-padding-right: 8px;
-}
-
-.col-sm-4 {
-padding-left: 20px;
-padding-right: 0px;
-}
-
-.row {
-padding-bottom: 15px;
-}
-#facebook_iframe {
-    transform-origin: 0 0;
-    -webkit-transform-origin: 0px 0px;
-    -moz-transform-origin: 0px 0px;
-}
 
 /* CUSTOMIZE THE NAVBAR
 -------------------------------------------------- */
