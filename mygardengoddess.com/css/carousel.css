@@ -227,6 +227,44 @@ margin-left: 0px;
 /* RESPONSIVE CSS
 -------------------------------------------------- */
 
+@media (max-width: 768px) {
+li.globalNavSocialLink {
+display: none;
+}
+.globalLogo{
+display: none;
+}
+.float_right{
+float:none;
+}
+ul.float_right{
+margin-top: -30px;
+}
+
+.nav  {
+	position: relative;
+	display: block;
+        margin-left: 50px;
+	padding: 10px 15px;
+        width: 120px;
+}
+
+li.addSpace {
+margin-left: 0px;
+}
+
+li.logoSpaceHolder{
+display:none;
+}
+
+#navbar {
+border-bottom: 10px solid #8CC63E;
+padding-left: 0px;
+padding-right: 0px;
+}
+
+}
+
 @media (max-width: 799px) {
 /* Shrink the social icons */
 
@@ -237,21 +275,12 @@ width: 22px;
 .globalNavSocialLink img {
 width: 18px;
 }
-/* Shrink the logo */
-.globalLogo {
-    width: 180px;
-    margin-left: -90px;
-}
+
 /* Shrink the nav font and padding */
 .navbar-default .navbar-nav li a {
 font-size: 12px;
 padding: 10px 10px 10px 0px;
 }
-    .logoSpaceHolder {
-        width: 180px;
-        padding: 0;
-    }
-
 
 .addSpace {
 margin-left: 40px;
@@ -262,6 +291,7 @@ margin-left: 40px;
 
 
 @media (min-width: 800px) {
+
     /* Shrink the social icons */
 
     .globalNavSocialLink {
