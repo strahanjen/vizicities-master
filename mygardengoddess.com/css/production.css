@@ -187,13 +187,28 @@ line-height: 1.25;
 }
 
 
-
 .paragraph p{
 line-height: 1.5;
 color: #5E4A24;
 margin-left: -5px;
 }
 
+.paragraph p.orangetitle {
+color: #FCB040;
+font-size: 150%;
+margin-top: 30px;
+margin-bottom: 20px;
+text-align:center;
+}
+
+.italics {
+font-style:italic;
+}
+
+
+.paragraph {
+  margin-bottom: 30px;
+}
 
   .bottom-column
   {
