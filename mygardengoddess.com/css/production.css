@@ -419,3 +419,8 @@ button, a.button {
 	padding: 0.6em 0.9em;
 	transition: all 0.3s ease-in-out;
 }
+
+input:focus, textarea:focus {
+    border-color: #57C5CD;
+    outline: none;
+    box-shadow: 0 0 5px 1px #57C5CD; }
