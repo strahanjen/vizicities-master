@@ -148,6 +148,14 @@ right: 0px;
 
 }
 
+.dropdown-menu li {
+margin-left: 10px;
+}
+
+.navbar-default .navbar-nav .open .dropdown-menu > li > a {
+	color: #ffffff;
+}
+
 /* CUSTOMIZE THE CAROUSEL
 -------------------------------------------------- */
 
