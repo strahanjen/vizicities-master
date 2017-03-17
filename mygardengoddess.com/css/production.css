@@ -64,6 +64,14 @@ letter-spacing: 2px;
 font-size: 20px;
 text-shadow: 0px 0px 3px #000, -1px -1px 4px #000, 1px 1px 4px #000;
 }
+
+.under {
+color: #FCB040;
+margin-top: -10px;
+font-size: 100%;
+font-weight: normal;
+}
+
 .col-sm-6, .col-sm-8, .col-sm-12{
 padding-left: 8px;
 padding-right: 8px;
@@ -99,7 +107,7 @@ margin-bottom: 15px;
 /* CUSTOMIZE THE NAVBAR
 -------------------------------------------------- */
 .globalNavSocialLink {
-    width: 33px;
+    height: 33px;
     text-align: center;
 }
 
@@ -164,6 +172,8 @@ padding-left: 10px;
 	background: none;
 }
 
+
+
 /* CUSTOMIZE THE CAROUSEL
 -------------------------------------------------- */
 
@@ -204,6 +214,19 @@ margin-top: 15px;
 line-height: 1.25;
 }
 
+.red {
+  color: #F2552C;
+  padding-right: 2px;
+  padding-left: 2px;
+}
+.phone {
+color: #fff;
+position: absolute;
+z-index: 100;
+right: 20px;
+top: 60px;
+font-size: 130%;
+}
 
 .paragraph p{
 line-height: 1.5;
@@ -267,7 +290,30 @@ margin-left: 0px;
 /* RESPONSIVE CSS
 -------------------------------------------------- */
 
+@media (max-width: 590px) {
+.carousel-caption {
+	display:none;
+}
+}
+
+@media (max-width: 650px) {
+.carousel-caption {
+	right: 20%;
+	left: 20%;
+	padding-bottom: 0px;
+}
+}
+
 @media (max-width: 768px) {
+.phone {
+color: #fff;
+position: absolute;
+z-index: 100;
+left: 60px;
+top: 300px;
+font-size: 130%;
+}
+
 li.globalNavSocialLink {
 display: none;
 }
@@ -334,17 +380,18 @@ color: #5F4828;
 	background: none;
 }
 
+
 }
 
 @media (max-width: 799px) {
 /* Shrink the social icons */
 
 .globalNavSocialLink {
-width: 22px;
+width: 23px;
 }
 
 .globalNavSocialLink img {
-width: 18px;
+height: 22px;
 }
 
 /* Shrink the nav font and padding */
@@ -366,11 +413,11 @@ margin-left: 40px;
     /* Shrink the social icons */
 
     .globalNavSocialLink {
-    width: 25px;
+    width: 30px;
     }
 
     .globalNavSocialLink img {
-    width: 20px;
+    height: 27px;
     }
 
     /* Shrink the nav font and padding */
@@ -405,7 +452,7 @@ padding: 10px 15px 10px 0px;
   }
 
   .globalNavSocialLink img {
-  width: 25px;
+  height: 27px;
   }
     /* Shrink the nav font and padding */
     .navbar-default .navbar-nav li a {
