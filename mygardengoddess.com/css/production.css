@@ -50,6 +50,11 @@ margin-top: 4px;
     text-indent: -9999px
 }
 
+.center {
+  display: block;
+  margin: 0 auto;
+}
+
 /*  Services section */
 .over {
 color: #ffffff;
@@ -68,7 +73,7 @@ text-shadow: 0px 0px 3px #000, -1px -1px 4px #000, 1px 1px 4px #000;
 .under {
 color: #FCB040;
 margin-top: -10px;
-font-size: 100%;
+font-size: 120%;
 font-weight: normal;
 }
 
@@ -225,7 +230,8 @@ position: absolute;
 z-index: 100;
 right: 20px;
 top: 60px;
-font-size: 130%;
+font-size: 160%;
+text-shadow: 0px 0px 0px #000, -1px -1px 4px #000, 1px 1px 4px #000;
 }
 
 .paragraph p{
@@ -269,6 +275,11 @@ font-style:italic;
       padding-bottom: 10px;
   }
 
+.pad {
+padding-right: 50px;
+padding-left: 50px;
+}
+
 /* Footer */
 footer {
 padding-top: 10px;
@@ -311,7 +322,8 @@ position: absolute;
 z-index: 100;
 left: 60px;
 top: 300px;
-font-size: 130%;
+font-size: 140%;
+text-shadow: 0px 0px 0px #000, -1px -1px 4px #000, 1px 1px 4px #000;
 }
 
 li.globalNavSocialLink {
