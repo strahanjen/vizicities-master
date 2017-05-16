@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<title>GRO Recommendations</title>
+
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" integrity="sha512-07I2e+7D8p6he1SIM+1twR5TIrhUQn9+I6yjqD53JQjFiMf8EtC93ty0/5vJTZGF8aAocvHYNEDJajGdNx1IsQ==" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js" integrity="sha512-A7vV8IFfih/D732iSSKi20u/ooOfj/AGehOKq0f4vLT1Zr2Y+RX7C+w8A1gaSasGtRUZpF/NZgzSAu4/Gc41Lg==" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet.vectorgrid@1.2.0"></script>
+
+	<style>
+			#map { position:absolute; top:0; bottom:0; width:100%; }
+	</style>
+
+
+</head>
+<body>
+
+<div id='map'></div>
+
+<script src="js/2017_05_13GRORecommendationsMatricesBranches.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+	var map = L.map('map').setView([45.024, -93.305], 10);
+	/*
+	map.on('click', function (e) {
+    coords= e.latlng.lat + ", " + e.latlng.lng;
+		alert (coords);
+});
+*/
+//light
+var grayscale =	L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw', {
+		maxZoom: 18,
+		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+			'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+			'Imagery © <a href="http://mapbox.com">Mapbox</a>'
+	}).addTo(map);
+
+	var satellite =	L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v10/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw', {
+			maxZoom: 18,
+			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+				'Imagery © <a href="http://mapbox.com">Mapbox</a>'
+		});
+
+/*
+	L.tileLayer('https://api.mapbox.com/styles/v1/strahanjen/cj2qpbblp002q2rp32q0rk1vf/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw', {
+		maxZoom: 18,
+		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+			'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+			'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+			id: ''
+	}).addTo(map);
+
+*/
+
+//function for choropleth colors
+
+function getColor(d) {
+    return d > 10000 ? '#000000' :
+           d > 5800  ? '#050505' :
+           d > 3900  ? '#2e2e2e' :
+           d > 2700  ? '#575757' :
+           d > 2000   ? '#808080' :
+           d > 1400   ? '#a8a8a8' :
+           d > 1000   ? '#c1c1c1' :
+					 d > 500   ? '#d8d8d8' :
+					 d > 100   ? '#e9e9e9' :
+                      '#e9e9e9';
+}
+
+	//options for styling census data
+	var vectorTileStyling = {
+        // A function for styling features dynamically, depending on their properties
+        'ACSBlockGroup-9wrwc1': function(properties, zoom) {
+            var pop = properties.poptotint;
+            var blockcolor = getColor(pop);
+            return {
+							fill: true,
+							weight: .5,
+							fillColor: blockcolor,
+							color: blockcolor,
+							fillOpacity: 1,
+							opacity: 1
+            }
+        }
+
+};
+//parcels - strahanjen.a1xef55p
+
+	var totpoplayer = L.vectorGrid.protobuf("https://a.tiles.mapbox.com/v4/strahanjen.7gnxxet8/{z}/{x}/{y}.vector.pbf?access_token={token}", {
+	    vectorTileLayerStyles: vectorTileStyling,
+	    token: "pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw"
+	});
+
+	var divestBranchIcon = L.icon({
+		iconUrl: 'images/branch_divest.png',
+		iconSize: [32, 32],
+		iconAnchor: [16, 32],
+		popupAnchor: [0, -28]
+	});
+
+	var newBranchIcon = L.icon({
+		iconUrl: 'images/branch_new.png',
+		iconSize: [32, 32],
+		iconAnchor: [16, 32],
+		popupAnchor: [0, -28]
+	});
+
+	var holdBranchIcon = L.icon({
+		iconUrl: 'images/branch_hold.png',
+		iconSize: [32, 32],
+		iconAnchor: [16, 32],
+		popupAnchor: [0, -28]
+	});
+	var investBranchIcon = L.icon({
+		iconUrl: 'images/branch_invest.png',
+		iconSize: [32, 32],
+		iconAnchor: [16, 32],
+		popupAnchor: [0, -28]
+	});
+	var divestCampIcon = L.icon({
+		iconUrl: 'images/camp_divest.png',
+		iconSize: [24, 28],
+		iconAnchor: [12, 28],
+		popupAnchor: [0, -28]
+	});
+	var holdCampIcon = L.icon({
+		iconUrl: 'images/camp_hold.png',
+		iconSize: [24, 28],
+		iconAnchor: [12, 28],
+		popupAnchor: [0, -28]
+	});
+	var investCampIcon = L.icon({
+		iconUrl: 'images/camp_invest.png',
+		iconSize: [24, 28],
+		iconAnchor: [12, 28],
+		popupAnchor: [0, -28]
+	});
+
+var branchesLayer = L.geoJson(branches,{
+    onEachFeature:onEachBranch
+});
+
+var campsLayer = L.geoJson(camps,{
+    onEachFeature:onEachCamp
+});
+
+var branchesNewLayer = L.geoJson(branches_new,{
+    onEachFeature:onEachNewBranch
+});
+
+var baseMaps = {
+    "Grayscale": grayscale,
+		"Satellite": satellite
+};
+
+var overlayMaps = {
+		"Total Population": totpoplayer
+};
+
+L.control.layers(baseMaps, overlayMaps).addTo(map);
+
+function onEachBranch(feature, layer) {
+
+    var lon = feature.geometry.coordinates[0];
+    var lat = feature.geometry.coordinates[1];
+
+    var popupContent;
+    var marker;
+		popupContent =  "<b>" + feature.properties.BRANCH_NAME + "</b>";
+		popupContent += "<br />Projected Budget: " + feature.properties.PROJ_BUDGET;
+		popupContent += "<br />&#8710; Units: " + feature.properties.Change_UNITS;
+		popupContent += "<br />&#8710; Mem. Revenue: " + feature.properties.CHANGE_MEM_REVENUE;
+		popupContent += "<br />Cost / Unit: " + feature.properties.COST_UNIT;
+		popupContent += "<br />Notes: " + feature.properties.INVESTMENT_NOTES;
+    switch(feature.properties.ICON) {
+        case "investBranchIcon":
+            marker = L.marker([lat, lon], {icon: investBranchIcon}).addTo(map);
+            break;
+        case "divestBranchIcon":
+            marker = L.marker([lat, lon], {icon: divestBranchIcon}).addTo(map);
+						popupContent += "Position: " + feature.properties.POSITION;
+            break;
+        default:
+            marker = L.marker([lat, lon], {icon: holdBranchIcon}).addTo(map);
+
+    }
+    marker.bindPopup(popupContent);
+}
+
+function onEachNewBranch(feature, layer) {
+
+    var lon = feature.geometry.coordinates[0];
+    var lat = feature.geometry.coordinates[1];
+
+    var popupContent;
+    var marker;
+		popupContent =  "<b>New Location: " + feature.properties.NEW_LOCATIONS + "</b>";
+		popupContent += "<br />Projected Budget: " + feature.properties.PROJ_BUDGET;
+		popupContent += "<br />Projected Penetration Rate: " + feature.properties.PROJ_PEN_RATE;
+		popupContent += "<br />Modeled Units " + feature.properties.MODELED_UNITS;
+		popupContent += "<br />Projected Mem. Revenue " + feature.properties.PROJ_MEM_REVENUE;
+		popupContent += "<br />Cost / Unit: " + feature.properties.COST_UNIT;
+		popupContent += "<br />Projected Facility Size " + feature.properties.PROJ_FACILITY_SIZE;
+		popupContent += "<br />Households: " + feature.properties.HOUSEHOLDS;
+		popupContent += "<br />Drivetime: " + feature.properties.DRIVE_TIME;
+		popupContent += "<br />Competition Index: " + feature.properties.COMP_INDEX;
+
+    marker = L.marker([lat, lon], {icon: newBranchIcon}).addTo(map);
+
+
+    marker.bindPopup(popupContent);
+}
+
+function onEachCamp(feature, layer) {
+
+    var lon = feature.geometry.coordinates[0];
+    var lat = feature.geometry.coordinates[1];
+
+    var popupContent;
+    var marker;
+		popupContent =  "<b>" + feature.properties.Camp + "</b>";
+		popupContent += "<br />Size: " + feature.properties.SIZE;
+		popupContent += "<br />Owned by YMCA: " + feature.properties.Owned;
+		popupContent += "<br />2016 Campers: " + feature.properties.Campers;
+		popupContent += "<br />2016 Camper Sessions: " + feature.properties.Camper_Sessions;
+		popupContent += "<br />2016 Utilization % Sessions: " + feature.properties.Util_pct_sessions;
+		popupContent += "<br />20-min Pop. Age 5-14: " + feature.properties.Twenty_MinPop;
+		popupContent += "<br />30-min Pop. Age 5-14: " + feature.properties.Thirty_MinPop;
+    switch(feature.properties.ICON) {
+				case "holdCampIcon":
+								marker = L.marker([lat, lon], {icon: holdCampIcon}).addTo(map);
+								break;
+				case "investCampIcon":
+								marker = L.marker([lat, lon], {icon: investCampIcon}).addTo(map);
+								break;
+			  case "divestCampIcon":
+								marker = L.marker([lat, lon], {icon: divestCampIcon}).addTo(map);
+								break;
+        default:
+            marker = L.marker([lat, lon], {icon: holdCampIcon}).addTo(map);
+    }
+
+    marker.bindPopup(popupContent);
+}
+
+</script>
+
+
+
+</body>
+</html>

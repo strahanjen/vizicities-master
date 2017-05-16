@@ -2,7 +2,7 @@
 <html>
 <head>
 
-	<title>GeoJSON tutorial - Leaflet</title>
+	<title>GRO Recommendations</title>
 
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -38,45 +38,46 @@
 
 	var divestBranchIcon = L.icon({
 		iconUrl: 'images/branch_divest.png',
-		iconSize: [32, 37],
-		iconAnchor: [16, 37],
+		iconSize: [32, 32],
+		iconAnchor: [16, 32],
 		popupAnchor: [0, -28]
 	});
 	var holdBranchIcon = L.icon({
 		iconUrl: 'images/branch_hold.png',
-		iconSize: [32, 37],
-		iconAnchor: [16, 37],
+		iconSize: [32, 32],
+		iconAnchor: [16, 32],
 		popupAnchor: [0, -28]
 	});
 	var investBranchIcon = L.icon({
 		iconUrl: 'images/branch_invest.png',
-		iconSize: [32, 37],
-		iconAnchor: [16, 37],
+		iconSize: [32, 32],
+		iconAnchor: [16, 32],
 		popupAnchor: [0, -28]
 	});
-/*
-	function onEachFeature(feature, layer) {
-
-		if (feature.properties && feature.properties.INVESTMENT_NOTES) {
-			var popupContent = feature.properties.INVESTMENT_NOTES;
-		}
-
-
-		layer.bindPopup(popupContent);
-	}
-
-	var branchesLayer = L.geoJSON(branches, {
-
-		pointToLayer: function (feature, latlng) {
-
-			return L.marker(latlng, {icon: investBranchIcon});
-		},
-
-		onEachFeature: onEachFeature
-	}).addTo(map);
-*/
+	var divestCampIcon = L.icon({
+		iconUrl: 'images/camp_divest.png',
+		iconSize: [24, 28],
+		iconAnchor: [12, 28],
+		popupAnchor: [0, -28]
+	});
+	var holdCampIcon = L.icon({
+		iconUrl: 'images/camp_hold.png',
+		iconSize: [24, 28],
+		iconAnchor: [12, 28],
+		popupAnchor: [0, -28]
+	});
+	var investCampIcon = L.icon({
+		iconUrl: 'images/camp_invest.png',
+		iconSize: [24, 28],
+		iconAnchor: [12, 28],
+		popupAnchor: [0, -28]
+	});
 
 var branchesLayer = L.geoJson(branches,{
+    onEachFeature:onEachFeature
+});
+
+var campsLayer = L.geoJson(camps,{
     onEachFeature:onEachFeature
 });
 
@@ -87,7 +88,8 @@ function onEachFeature(feature, layer) {
 
     var popupContent;
     var marker;
-		popupContent = "Proj. Budget: " + feature.properties.PROJ_BUDGET;
+		popupContent =  "<b>" + feature.properties.BRANCH_NAME + "</b>";
+		popupContent += "<br />Proj. Budget: " + feature.properties.PROJ_BUDGET;
 		popupContent += "<br />&#8710; Units: " + feature.properties.Change_UNITS;
 		popupContent += "<br />&#8710; Mem. Revenue: " + feature.properties.CHANGE_MEM_REVENUE;
 		popupContent += "<br />Cost / Unit: " + feature.properties.COST_UNIT;
@@ -100,6 +102,15 @@ function onEachFeature(feature, layer) {
             marker = L.marker([lat, lon], {icon: divestBranchIcon}).addTo(map);
 						popupContent += "Position: " + feature.properties.POSITION;
             break;
+				case "holdCampIcon":
+								marker = L.marker([lat, lon], {icon: holdCampIcon}).addTo(map);
+								break;
+				case "investCampIcon":
+								marker = L.marker([lat, lon], {icon: investCampIcon}).addTo(map);
+								break;
+			  case "divestCampIcon":
+								marker = L.marker([lat, lon], {icon: divestCampIcon}).addTo(map);
+								break;
         default:
             marker = L.marker([lat, lon], {icon: holdBranchIcon}).addTo(map);
 
