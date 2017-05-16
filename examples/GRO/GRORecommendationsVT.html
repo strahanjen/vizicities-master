@@ -94,7 +94,7 @@ function getColor(d) {
 
 var boundaryTileStyling = {
 			// A function for styling features dynamically, depending on their properties
-			'regions-0fcsvt':  {
+			'regions_new-3dalmb':  {
 						fill: false,
 						weight: 3,
 						//fillColor: '#f2b648',
@@ -125,8 +125,9 @@ var boundaryTileStyling = {
 	});
 
 //boundaries
+//https://a.tiles.mapbox.com/v4/strahanjen.a28titpm,strahanjen.crsx1fxo/6/14/22.vector.pbf?access_token=pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw
 //https://b.tiles.mapbox.com/v4/strahanjen.a28titpm,strahanjen.2eiaeynz/6/15/22.vector.pbf?access_token=pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw
-	var boundaries = L.vectorGrid.protobuf("https://a.tiles.mapbox.com/v4/strahanjen.a28titpm,strahanjen.2eiaeynz/{z}/{x}/{y}.vector.pbf?access_token={token}", {
+	var boundaries = L.vectorGrid.protobuf("https://a.tiles.mapbox.com/v4/strahanjen.a28titpm,strahanjen.crsx1fxo/{z}/{x}/{y}.vector.pbf?access_token={token}", {
 	    vectorTileLayerStyles: boundaryTileStyling,
 	    token: "pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw"
 	}).addTo(map);
