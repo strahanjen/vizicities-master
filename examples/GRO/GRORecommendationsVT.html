@@ -23,16 +23,19 @@
 
 <div id='map'></div>
 
-<script src="js/2017_05_13GRORecommendationsMatricesBranches.js" type="text/javascript"></script>
+<script src="js/2017_05_13GRORecommendationsMatrices_NoNulls.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 	var map = L.map('map').setView([45.024, -93.305], 10);
-	/*
+	var campsGroup = L.layerGroup().addTo(map);
+	var branchesGroup = L.layerGroup().addTo(map);
+/*
 	map.on('click', function (e) {
     coords= e.latlng.lat + ", " + e.latlng.lng;
 		alert (coords);
 });
 */
+
 //light
 var grayscale =	L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw', {
 		maxZoom: 18,
@@ -47,6 +50,15 @@ var grayscale =	L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v9/ti
 				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
 				'Imagery © <a href="http://mapbox.com">Mapbox</a>'
 		});
+		//outdoors
+		//https://api.mapbox.com/styles/v1/mapbox/outdoors-v10/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw
+//https://api.mapbox.com/styles/v1/mapbox/streets-v10/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw
+var streets = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/outdoors-v10/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw', {
+		maxZoom: 18,
+		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+			'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+			'Imagery © <a href="http://mapbox.com">Mapbox</a>'
+	});
 
 /*
 	L.tileLayer('https://api.mapbox.com/styles/v1/strahanjen/cj2qpbblp002q2rp32q0rk1vf/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw', {
@@ -173,6 +185,12 @@ var boundaryTileStyling = {
 		iconAnchor: [12, 28],
 		popupAnchor: [0, -28]
 	});
+	var newCampIcon = L.icon({
+		iconUrl: 'images/camp_new.png',
+		iconSize: [24, 28],
+		iconAnchor: [12, 28],
+		popupAnchor: [0, -28]
+	});
 	var holdCampIcon = L.icon({
 		iconUrl: 'images/camp_hold.png',
 		iconSize: [24, 28],
@@ -185,6 +203,12 @@ var boundaryTileStyling = {
 		iconAnchor: [12, 28],
 		popupAnchor: [0, -28]
 	});
+	var overnightCampIcon = L.icon({
+		iconUrl: 'images/camp_overnight.png',
+		iconSize: [24, 24],
+		iconAnchor: [12, 24],
+		popupAnchor: [0, -28]
+	});
 
 var branchesLayer = L.geoJson(branches,{
     onEachFeature:onEachBranch
@@ -194,20 +218,15 @@ var campsLayer = L.geoJson(camps,{
     onEachFeature:onEachCamp
 });
 
+var overnightCampsLayer = L.geoJson(overnightCamps,{
+    onEachFeature:onEachOvernightCamp
+});
+
 var branchesNewLayer = L.geoJson(branches_new,{
     onEachFeature:onEachNewBranch
 });
 
-var baseMaps = {
-    "Grayscale": grayscale,
-		"Satellite": satellite
-};
 
-var overlayMaps = {
-		"Total Population": totpoplayer
-};
-
-L.control.layers(baseMaps, overlayMaps).addTo(map);
 
 function onEachBranch(feature, layer) {
 
@@ -224,17 +243,18 @@ function onEachBranch(feature, layer) {
 		popupContent += "<br />Notes: " + feature.properties.INVESTMENT_NOTES;
     switch(feature.properties.ICON) {
         case "investBranchIcon":
-            marker = L.marker([lat, lon], {icon: investBranchIcon}).addTo(map);
+            marker = L.marker([lat, lon], {icon: investBranchIcon});
             break;
         case "divestBranchIcon":
-            marker = L.marker([lat, lon], {icon: divestBranchIcon}).addTo(map);
+            marker = L.marker([lat, lon], {icon: divestBranchIcon});
 						popupContent += "Position: " + feature.properties.POSITION;
             break;
         default:
-            marker = L.marker([lat, lon], {icon: holdBranchIcon}).addTo(map);
+            marker = L.marker([lat, lon], {icon: holdBranchIcon});
 
     }
     marker.bindPopup(popupContent);
+		branchesGroup.addLayer(marker);
 }
 
 function onEachNewBranch(feature, layer) {
@@ -255,10 +275,11 @@ function onEachNewBranch(feature, layer) {
 		popupContent += "<br />Drivetime: " + feature.properties.DRIVE_TIME;
 		popupContent += "<br />Competition Index: " + feature.properties.COMP_INDEX;
 
-    marker = L.marker([lat, lon], {icon: newBranchIcon}).addTo(map);
+    marker = L.marker([lat, lon], {icon: newBranchIcon});
 
 
     marker.bindPopup(popupContent);
+		branchesGroup.addLayer(marker);
 }
 
 function onEachCamp(feature, layer) {
@@ -269,6 +290,7 @@ function onEachCamp(feature, layer) {
     var popupContent;
     var marker;
 		popupContent =  "<b>" + feature.properties.Camp + "</b>";
+		popupContent += "<br />Project Allowance: " + feature.properties.Allowance;
 		popupContent += "<br />Size: " + feature.properties.SIZE;
 		popupContent += "<br />Owned by YMCA: " + feature.properties.Owned;
 		popupContent += "<br />2016 Campers: " + feature.properties.Campers;
@@ -276,22 +298,62 @@ function onEachCamp(feature, layer) {
 		popupContent += "<br />2016 Utilization % Sessions: " + feature.properties.Util_pct_sessions;
 		popupContent += "<br />20-min Pop. Age 5-14: " + feature.properties.Twenty_MinPop;
 		popupContent += "<br />30-min Pop. Age 5-14: " + feature.properties.Thirty_MinPop;
+		popupContent += "<br />Notes: " + feature.properties.Notes;
     switch(feature.properties.ICON) {
 				case "holdCampIcon":
-								marker = L.marker([lat, lon], {icon: holdCampIcon}).addTo(map);
+								marker = L.marker([lat, lon], {icon: holdCampIcon});
 								break;
 				case "investCampIcon":
-								marker = L.marker([lat, lon], {icon: investCampIcon}).addTo(map);
+								marker = L.marker([lat, lon], {icon: investCampIcon});
 								break;
 			  case "divestCampIcon":
-								marker = L.marker([lat, lon], {icon: divestCampIcon}).addTo(map);
+								marker = L.marker([lat, lon], {icon: divestCampIcon});
+								break;
+				case "newCampIcon":
+								marker = L.marker([lat, lon], {icon: newCampIcon});
 								break;
         default:
-            marker = L.marker([lat, lon], {icon: holdCampIcon}).addTo(map);
+            marker = L.marker([lat, lon], {icon: holdCampIcon});
     }
 
     marker.bindPopup(popupContent);
+		campsGroup.addLayer(marker);
 }
+
+function onEachOvernightCamp(feature, layer) {
+
+    var lon = feature.geometry.coordinates[0];
+    var lat = feature.geometry.coordinates[1];
+
+    var popupContent;
+    var marker;
+		popupContent =  "<b>" + feature.properties.Property_Name + "</b>";
+		popupContent += "<br />Branch Affiliation: " + feature.properties.Branc_Affiliation;
+		popupContent += "<br />Current Use: " + feature.properties.Current_Use;
+		popupContent += "<br />Total Acreage - Land: " + feature.properties.Acreage_Land;
+		popupContent += "<br />Total Sq.Ft. -Buildings: " + feature.properties.BLDGSQFT;
+		popupContent += "<br />Owned by YMCA: " + feature.properties.Own_Lease;
+    marker = L.marker([lat, lon], {icon: overnightCampIcon});
+    marker.bindPopup(popupContent);
+		campsGroup.addLayer(marker);
+}
+
+
+var baseMaps = {
+    "Grayscale": grayscale,
+		"Streets": streets,
+		"Satellite": satellite
+};
+
+var overlayMaps = {
+		"Branches": branchesGroup,
+		"Camps": campsGroup,
+		"Total Population": totpoplayer,
+		"Region & Cities": boundaries,
+};
+
+
+L.control.layers(baseMaps, overlayMaps).addTo(map);
 
 </script>
 

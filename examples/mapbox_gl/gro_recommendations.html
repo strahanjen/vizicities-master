@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title></title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.37.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.37.0/mapbox-gl.css' rel='stylesheet' />
+    <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+        #features {position: absolute; bottom: 20px; right: 10px; z-index: 1000; color: #000000; background-color: #ffffff; padding: 10px;}
+        .map-overlay {
+    font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    position: absolute;
+    width: 40%;
+    top: 0;
+    left: 0;
+    padding: 10px;
+}
+
+.map-overlay .map-overlay-inner {
+    background-color: #fff;
+    box-shadow:0 1px 2px rgba(0, 0, 0, 0.20);
+    border-radius: 3px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.map-overlay h2 {
+    line-height: 24px;
+    display: block;
+    margin: 0 0 10px;
+}
+
+
+.map-overlay input {
+    background-color: transparent;
+}
+
+.ui-btn {
+    height: 10px;
+    padding: .5em 0;
+}
+.mapboxgl-popup {
+    max-width: 400px;
+    font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+}
+
+
+    </style>
+</head>
+<body>
+
+<div id="map"></div>
+<div class='map-overlay top'>
+    <div class='map-overlay-inner'>
+        <h2>Show parcels by year built</h2>
+      <!--  <input id='slider' type='range' min='1925' max='2017' step='1' value='1925' />-->
+
+      <fieldset class="ui-grid-a">
+          <div class="ui-block-a" style="width:85%">
+            <div data-role="rangeslider">
+              <input type="range" name="year-min" id="year-min" value="1925" min="1853" max="2017">
+              <input type="range" name="year-max" id="year-max" value="1945" min="1853" max="2017">
+            </div>
+          </div>
+          <div class="ui-block-b" style="width:15%">
+                  <input type="button" class="goBtn" id="yearBtn" value="Go">
+          </div>
+      </fieldset>
+
+
+
+
+
+  </div>
+</div>
+<div id="features"></div>
+<script>
+mapboxgl.accessToken = 'pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw';
+var map = new mapboxgl.Map({
+    container: 'map',
+    //style: 'mapbox://styles/mapbox/light-v9',
+    style: 'mapbox://styles/strahanjen/cj2q8fyar00372rmrk088zw3p',
+    zoom: 10,
+    center: [-93.1, 44.95]
+});
+
+
+
+map.on('load', function () {
+
+
+    map.addLayer({
+        "id": "parcel-data_fill",
+        "type": "fill",
+        "source": {
+            type: 'vector',
+            url: 'mapbox://strahanjen.aiykejuy'
+        },
+        "source-layer": "Archive_3-9jieyt",
+        "paint": {
+            'fill-color': '#43919d',
+            'fill-outline-color': '#2c6e72',
+          'fill-opacity': 0.4
+        }
+    });
+
+    map.addLayer({
+       "id": "parcel-fills-hover",
+       "type": "fill",
+       "source": {
+           type: 'vector',
+           url: 'mapbox://strahanjen.aiykejuy'
+       },
+       "source-layer": "Archive_3-9jieyt",
+       "layout": {},
+       "paint": {
+           "fill-color": "#08e4f7",
+           "fill-opacity": .7
+       },
+       "filter": ["==", "PIN", ""]
+   });
+
+/*
+   map.loadImage('https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Cat_silhouette.svg/400px-Cat_silhouette.svg.png', (error, image) => {
+    if (error) throw error;
+    map.addImage('INVEST', image);
+    map.addImage('DIVEST', image);
+    map.addImage('HOLD', image);
+
+   // Add a layer showing the places.
+    map.addLayer({
+        "id": "branches",
+        "type": "symbol",
+        "source": {
+            "type": "geojson",
+            "data": '2017_05_13GRORecommendationsMatricesBranches.geojson'
+        },
+        "layout": {
+            "icon-image": "{icon}",
+            "icon-allow-overlap": true
+        }
+      });
+*/
+map.addSource("ymca_branches", {
+    type: "geojson",
+    "data": '2017_05_13GRORecommendationsMatricesBranches.geojson'
+});
+/*
+map.loadImage('branch_hold.png', (error, image2) => {
+    if (error) throw error;
+    map.addImage('HOLD', image2);
+});
+
+    map.loadImage('branch_divest.png', (error, image1) => {
+        if (error) throw error;
+        map.addImage('DIVEST', image1);
+    });
+
+    map.loadImage('branch_invest.png', (error, image3) => {
+        if (error) throw error;
+        map.addImage('INVEST', image3);
+    });
+*/
+    map.addLayer({
+        "id": "branches",
+        "type": "symbol",
+        "source": "ymca_branches",
+        "layout": {
+            "icon-image": "{ICON}",
+            "icon-allow-overlap": true,
+            "icon-size": 1
+        }
+    });
+/*
+    map.loadImage('branch_invest.png', (error, image) => {
+        if (error) throw error;
+        map.addImage('INVEST', image);
+        map.addImage('DIVEST', image);
+        map.addImage('HOLD', image);
+
+        map.addLayer({
+            "id": "branches",
+            "type": "symbol",
+            "source": "ymca_branches",
+            "layout": {
+                "icon-image": "{ICON}",
+                "icon-allow-overlap": true,
+                "icon-size": 0.1
+            }
+        });
+    });
+*/
+
+
+   // When the user moves their mouse over the states-fill layer, we'll update the filter in
+   // the state-fills-hover layer to only show the matching state, thus making a hover effect.
+   map.on("mousemove", "parcel-data_fill", function(e) {
+       map.setFilter("parcel-fills-hover", ["==", "PIN", e.features[0].properties.PIN]);
+       var features = map.queryRenderedFeatures(e.point);
+       var emvLand = e.features[0].properties.EMV_LAND;
+       var emvBldg = e.features[0].properties.EMV_BLDG;
+       var emvTotal = e.features[0].properties.EMV_TOTAL;
+       var yearBuilt = e.features[0].properties.YEAR_BUILT;
+       document.getElementById('features').innerHTML = "EMV Land: $" + emvLand.toLocaleString() + "<BR /> EMV Building: $" + emvBldg.toLocaleString() + "<BR /> EMV Total: $" + emvTotal.toLocaleString() + "<BR /> Year Built: " + yearBuilt;
+   });
+
+   // Reset the state-fills-hover layer's filter when the mouse leaves the layer.
+   map.on("mouseleave", "parcel-data_fill", function() {
+       map.setFilter("parcel-fills-hover", ["==", "PIN", ""]);
+   });
+
+
+   // Add zoom and rotation controls to the map.
+   map.addControl(new mapboxgl.NavigationControl());
+
+  //set up filter parcels by year
+  //document.getElementById("years_filter").addEventListener("submit", getYears);
+  //set default year Options
+  filterYears(1925, 1945);
+
+  var lowerSlider = document.querySelector('#year-min'),
+   upperSlider = document.querySelector('#year-max'),
+   yearminVal = parseInt(lowerSlider.value),
+   yearmaxVal = parseInt(upperSlider.value);
+   var goButton = document.querySelector('#yearBtn');
+
+goButton.onclick = function() {
+   yearminVal = parseInt(lowerSlider.value);
+   yearmaxVal = parseInt(upperSlider.value);
+   filterYears(yearminVal, yearmaxVal);
+};
+
+  function filterYears(year_min, year_max) {
+        var filters = [
+            "all",
+            ['>=', 'YEAR_BUILT', year_min],
+            ['<=', 'YEAR_BUILT', year_max]
+        ];
+        map.setFilter('parcel-data_fill', filters);
+  }
+
+
+
+  // When a click event occurs on a feature in the places layer, open a popup at the
+   // location of the feature, with description HTML from its properties.
+   map.on('click', 'branches', function (e) {
+       new mapboxgl.Popup()
+           .setLngLat(e.features[0].geometry.coordinates)
+           .setHTML(e.features[0].properties.INVESTMENT_NOTES)
+           .addTo(map);
+   });
+
+   // Change the cursor to a pointer when the mouse is over the places layer.
+   map.on('mouseenter', 'branches', function () {
+       map.getCanvas().style.cursor = 'pointer';
+   });
+
+   // Change it back to a pointer when it leaves.
+   map.on('mouseleave', 'branches', function () {
+       map.getCanvas().style.cursor = '';
+   });
+
+
+
+});
+</script>
+
+</body>
+</html>
