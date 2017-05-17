@@ -71,46 +71,88 @@ var streets = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/outdoors-v10/
 
 */
 
-//function for choropleth colors
-//['#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59','#ef6548','#d7301f','#990000'
 function getColor(d) {
-    return d > 6000 ? '#990000' :
-           d > 3900  ? '#d7301f' :
-           d > 2700  ? '#ef6548' :
-           d > 2000   ? '#fc8d59' :
-           d > 1400   ? '#fdbb84' :
-           d > 1000   ? '#fdd49e' :
-					 d > 500   ? '#fee8c8' :
-					 d > 100   ? '#fff7ec' :
-                      '#fff7ec';
+    return d > 9000 ? '#990000' :
+           d > 7000  ? '#d7301f' :
+           d > 5000  ? '#ef6548' :
+           d > 3000   ? '#fc8d59' :
+           d > 1000   ? '#fdbb84' :
+           d > 500   ? '#fdd49e' :
+					 d > 200   ? '#fee8c8' :
+					 d > 50   ? '#fffdf9' :
+					 d > 5   ? '#ffffff' :
+                      '#ffffff';
+}
+
+function getColorIncome(d) {
+    return d > 173000 ? '#3288bd' :
+           d > 133000  ? '#66c2a5' :
+           d > 105000  ? '#abdda4' :
+           d > 85000   ? '#e6f598' :
+           d > 69000   ? '#fee08b' :
+           d > 56000   ? '#fdae61' :
+					 d > 44000   ? '#f46d43' :
+					 d > 28000   ? '#d53e4f' :
+                      '#ab3140';
 }
 
 	//options for styling census data
 	var vectorTileStyling = {
 
         // A function for styling features dynamically, depending on their properties
-        'ACSBlockGroup-9wrwc1': function(properties, zoom) {
-            var pop = properties.poptotint;
-            var blockcolor = getColor(pop);
+				'ACS-csw04m': function(properties, zoom) {
+            var popden = properties.Pop_Densit;
+            var blockcolor = getColor(popden);
             return {
 							fill: true,
 							weight: .5,
 							fillColor: blockcolor,
 							color: blockcolor,
-							fillOpacity: .8,
+							fillOpacity: .6,
 							opacity: 1
             }
         },
-				'cities-6wjp18':  {
+				'cities-6wjp18':  function(properties, zoom){
+            var name = properties.Name;
+					  return {
 							fill: false,
 							weight: .5,
 							color: '#a8a8a8',
 							opacity: 1,
 							dashArray: [4, 4]
+						}
 				}
 
 
 };
+
+//options for styling census data
+var vectorTileHHIStyling = {
+
+			// A function for styling features dynamically, depending on their properties
+			'ACS-csw04m': function(properties, zoom) {
+					var medHHI = properties.MEDIANHHI;
+					var blockcolor = getColorIncome(medHHI);
+					return {
+						fill: true,
+						weight: .5,
+						fillColor: blockcolor,
+						color: blockcolor,
+						fillOpacity: .6,
+						opacity: 1
+					}
+			},
+			'cities-6wjp18':  {
+						fill: false,
+						weight: .5,
+						color: '#a8a8a8',
+						opacity: 1,
+						dashArray: [4, 4]
+			}
+
+
+};
+
 
 var boundaryTileStyling = {
 			// A function for styling features dynamically, depending on their properties
@@ -139,9 +181,14 @@ var boundaryTileStyling = {
 
 //parcels - strahanjen.a1xef55p
 //https://b.tiles.mapbox.com/v4/strahanjen.7gnxxet8,mapbox.mapbox-streets-v7/9/122/183.vector.pbf?access_token=pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw
-	var totpoplayer = L.vectorGrid.protobuf("https://a.tiles.mapbox.com/v4/strahanjen.7gnxxet8,strahanjen.a28titpm/{z}/{x}/{y}.vector.pbf?access_token={token}", {
+	var totpoplayer = L.vectorGrid.protobuf("https://a.tiles.mapbox.com/v4/strahanjen.6q83axlk,strahanjen.a28titpm/{z}/{x}/{y}.vector.pbf?access_token={token}", {
 	    vectorTileLayerStyles: vectorTileStyling,
 	    token: "pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw"
+	});
+
+	var medHHINClayer = L.vectorGrid.protobuf("https://a.tiles.mapbox.com/v4/strahanjen.6q83axlk,strahanjen.a28titpm/{z}/{x}/{y}.vector.pbf?access_token={token}", {
+			vectorTileLayerStyles: vectorTileHHIStyling,
+			token: "pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw"
 	});
 
 //boundaries
@@ -348,7 +395,8 @@ var baseMaps = {
 var overlayMaps = {
 		"Branches": branchesGroup,
 		"Camps": campsGroup,
-		"Total Population": totpoplayer,
+		"Population Density": totpoplayer,
+		"Median Household Income": medHHINClayer,
 		"Region & Cities": boundaries,
 };
 
