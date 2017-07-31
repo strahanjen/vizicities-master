@@ -71,88 +71,59 @@ var streets = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/outdoors-v10/
 
 */
 
+//function for choropleth colors
+//['#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59','#ef6548','#d7301f','#990000'
 function getColor(d) {
-    return d > 9000 ? '#990000' :
-           d > 7000  ? '#d7301f' :
-           d > 5000  ? '#ef6548' :
-           d > 3000   ? '#fc8d59' :
-           d > 1000   ? '#fdbb84' :
-           d > 500   ? '#fdd49e' :
-					 d > 200   ? '#fee8c8' :
-					 d > 50   ? '#fffdf9' :
-					 d > 5   ? '#ffffff' :
-                      '#ffffff';
+    return d > 6000 ? '#990000' :
+           d > 3900  ? '#d7301f' :
+           d > 2700  ? '#ef6548' :
+           d > 2000   ? '#fc8d59' :
+           d > 1400   ? '#fdbb84' :
+           d > 1000   ? '#fdd49e' :
+					 d > 500   ? '#fee8c8' :
+					 d > 100   ? '#fff7ec' :
+                      '#fff7ec';
 }
 
 function getColorIncome(d) {
-    return d > 173000 ? '#3288bd' :
-           d > 133000  ? '#66c2a5' :
-           d > 105000  ? '#abdda4' :
-           d > 85000   ? '#e6f598' :
-           d > 69000   ? '#fee08b' :
-           d > 56000   ? '#fdae61' :
-					 d > 44000   ? '#f46d43' :
-					 d > 28000   ? '#d53e4f' :
-                      '#ab3140';
+    return d > 6000 ? '#3288bd' :
+           d > 3900  ? '#66c2a5' :
+           d > 2700  ? '#abdda4' :
+           d > 2000   ? '#e6f598' :
+           d > 1400   ? '#fee08b' :
+           d > 1000   ? '#fdae61' :
+					 d > 500   ? '#f46d43' :
+					 d > 100   ? '#d53e4f' :
+                      '#fff7ec';
 }
+
 
 	//options for styling census data
 	var vectorTileStyling = {
 
         // A function for styling features dynamically, depending on their properties
-				'ACS-csw04m': function(properties, zoom) {
-            var popden = properties.Pop_Densit;
-            var blockcolor = getColor(popden);
+        'ACS-csw04m': function(properties, zoom) {
+            var pop = properties.poptotint;
+            var blockcolor = getColor(pop);
             return {
 							fill: true,
 							weight: .5,
 							fillColor: blockcolor,
 							color: blockcolor,
-							fillOpacity: .6,
+							fillOpacity: .8,
 							opacity: 1
             }
         },
-				'cities-6wjp18':  function(properties, zoom){
-            var name = properties.Name;
-					  return {
+				'cities-6wjp18':  {
 							fill: false,
 							weight: .5,
 							color: '#a8a8a8',
 							opacity: 1,
 							dashArray: [4, 4]
-						}
 				}
 
 
 };
-
-//options for styling census data
-var vectorTileHHIStyling = {
-
-			// A function for styling features dynamically, depending on their properties
-			'ACS-csw04m': function(properties, zoom) {
-					var medHHI = properties.MEDIANHHI;
-					var blockcolor = getColorIncome(medHHI);
-					return {
-						fill: true,
-						weight: .5,
-						fillColor: blockcolor,
-						color: blockcolor,
-						fillOpacity: .6,
-						opacity: 1
-					}
-			},
-			'cities-6wjp18':  {
-						fill: false,
-						weight: .5,
-						color: '#a8a8a8',
-						opacity: 1,
-						dashArray: [4, 4]
-			}
-
-
-};
-
 
 var boundaryTileStyling = {
 			// A function for styling features dynamically, depending on their properties
@@ -180,15 +151,11 @@ var boundaryTileStyling = {
 
 
 //parcels - strahanjen.a1xef55p
+//https://a.tiles.mapbox.com/v4/strahanjen.6q83axlk,strahanjen.a28titpm/8/60/92.vector.pbf?access_token=pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw
 //https://b.tiles.mapbox.com/v4/strahanjen.7gnxxet8,mapbox.mapbox-streets-v7/9/122/183.vector.pbf?access_token=pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw
 	var totpoplayer = L.vectorGrid.protobuf("https://a.tiles.mapbox.com/v4/strahanjen.6q83axlk,strahanjen.a28titpm/{z}/{x}/{y}.vector.pbf?access_token={token}", {
 	    vectorTileLayerStyles: vectorTileStyling,
 	    token: "pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw"
-	});
-
-	var medHHINClayer = L.vectorGrid.protobuf("https://a.tiles.mapbox.com/v4/strahanjen.6q83axlk,strahanjen.a28titpm/{z}/{x}/{y}.vector.pbf?access_token={token}", {
-			vectorTileLayerStyles: vectorTileHHIStyling,
-			token: "pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw"
 	});
 
 //boundaries
@@ -395,13 +362,14 @@ var baseMaps = {
 var overlayMaps = {
 		"Branches": branchesGroup,
 		"Camps": campsGroup,
-		"Population Density": totpoplayer,
-		"Median Household Income": medHHINClayer,
+		"Total Population": totpoplayer,
 		"Region & Cities": boundaries,
 };
 
 
 L.control.layers(baseMaps, overlayMaps).addTo(map);
+
+//https://matrix.mapzen.com/isochrone?api_key=mapzen-xxxxxx&json={"locations":[{"lat":"43.06675586341758","lon":"-89.40384721616283"}],"costing":"auto","denoise":0.3,"polygons":true,"generalize":50,"costing_options":{"pedestrian":{"use_ferry":0}},"contours":[{"time":15},{"time":30},{"time":45},{"time":60}]}
 
 </script>
 

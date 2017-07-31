@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<title>GRO Recommendations</title>
+
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" integrity="sha512-07I2e+7D8p6he1SIM+1twR5TIrhUQn9+I6yjqD53JQjFiMf8EtC93ty0/5vJTZGF8aAocvHYNEDJajGdNx1IsQ==" crossorigin=""/>
+    <script src="js/leaflet.js" type="text/javascript"></script>
+    <script src="js/leaflet.vectorgrid@1.2.0" type="text/javascript"></script>
+		<script src='js/jquery.min.js' type="text/javascript"></script>
+
+	<style>
+			#map { position:absolute; top:0; bottom:0; width:100%; }
+			.sectiontitleGREEN {
+					font-size: 12pt;
+					margin-bottom: 0px;
+					margin-top: 5px;
+					background-color: #00b422;
+					color: #ffffff;
+					padding-left: 10px;
+					}
+		 .sectiontitleRED {
+					font-size: 12pt;
+					margin-bottom: 0px;
+					margin-top: 5px;
+					background-color: #ed0000;
+					color: #ffffff;
+					padding-left: 10px;
+			}
+		.sectiontitleYELLOW {
+				 font-size: 12pt;
+				 margin-bottom: 0px;
+				margin-top: 5px;
+				background-color: #f9c032;
+				color: #000000;
+				padding-left: 10px;
+		}
+		.sectiontitle {
+			font-size: 11pt;
+			font-weight: normal;
+			margin-bottom: 0px;
+			margin-top: 5px;
+			background-color: #999999;
+			color: #ffffff;
+		  padding-left: 10px;
+		}
+		.sectiontitleBLUE {
+				 font-size: 12pt;
+				 margin-bottom: 0px;
+				margin-top: 5px;
+				background-color: #5b9bd4;
+				color: #ffffff;
+				padding-left: 10px;
+		}
+
+		#buttonContainer {
+  font-size: 75%;
+}
+
+	</style>
+
+
+</head>
+<body>
+
+<div id='map'></div>
+<div id="buttonContainer">
+ <a onclick='clearDriveTimes();'>Clear</a>
+</div>
+
+<script src="js/2017_05_18GRORecommendations.js" type="text/javascript"></script>
+<script type="text/javascript" src="js/leaflet-control-credits.js"></script>
+<link rel="stylesheet" href="css/leaflet-control-credits.css" />
+
+<script type="text/javascript">
+	var map = L.map('map').setView([45.024, -93.305], 10);
+	var campsGroupNew = L.layerGroup().addTo(map);
+	var campsGroupHold = L.layerGroup().addTo(map);
+	var campsGroupDivest = L.layerGroup().addTo(map);
+	var campsGroupInvest = L.layerGroup().addTo(map);
+	var branchesGroupNew = L.layerGroup().addTo(map);
+	var branchesGroupHold = L.layerGroup().addTo(map);
+	var branchesGroupDivest = L.layerGroup().addTo(map);
+	var branchesGroupInvest = L.layerGroup().addTo(map);
+	var driveGroupBranch = L.layerGroup().addTo(map);
+	var driveGroupCamp = L.layerGroup().addTo(map);
+
+	var mapControlsContainer = document.getElementsByClassName("leaflet-control")[0];
+  var buttonContainer = document.getElementById("buttonContainer");
+
+  mapControlsContainer.appendChild(buttonContainer);
+
+/*
+
+	map.on('click', function (e) {
+    coords= e.latlng.lat + ", " + e.latlng.lng;
+		alert (coords);
+});
+*/
+
+// credits
+L.controlCredits({
+		image: "images/Visible-Cities-Logo-Vert-Color-PNG.png",
+		link: "http://www.visible.city",
+		text: "Interactive mapping<br/>by Visible City",
+		width: 60,
+		height: 167
+}).addTo(map);
+
+//light
+var grayscale =	L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw', {
+		maxZoom: 18,
+		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+			'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+			'Imagery © <a href="http://mapbox.com">Mapbox</a>'
+	}).addTo(map);
+
+	var satellite =	L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v10/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw', {
+			maxZoom: 18,
+			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+				'Imagery © <a href="http://mapbox.com">Mapbox</a>'
+		});
+		//outdoors
+		//https://api.mapbox.com/styles/v1/mapbox/outdoors-v10/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw
+//https://api.mapbox.com/styles/v1/mapbox/streets-v10/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw
+var streets = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/outdoors-v10/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw', {
+		maxZoom: 18,
+		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+			'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+			'Imagery © <a href="http://mapbox.com">Mapbox</a>'
+	});
+
+/*
+	L.tileLayer('https://api.mapbox.com/styles/v1/strahanjen/cj2qpbblp002q2rp32q0rk1vf/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw', {
+		maxZoom: 18,
+		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+			'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+			'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+			id: ''
+	}).addTo(map);
+
+*/
+
+function getColor(d) {
+    return d > 9000 ? '#990000' :
+           d > 7000  ? '#d7301f' :
+           d > 5000  ? '#ef6548' :
+           d > 3000   ? '#fc8d59' :
+           d > 1000   ? '#fdbb84' :
+           d > 500   ? '#fdd49e' :
+					 d > 200   ? '#fee8c8' :
+					 d > 50   ? '#fffdf9' :
+					 d > 5   ? '#ffffff' :
+                      '#ffffff';
+}
+
+function getColorIncome(d) {
+    return d > 150000 ? '#005824' :
+           d > 105000  ? '#238b45' :
+           d > 85000  ? '#41ae76' :
+           d > 69000   ? '#66c2a4' :
+           d > 50000   ? '#99d8c9' :
+           d > 35000   ? '#ccece6' :
+					 d > 25000   ? '#e5f5f9' :
+                      '#f7fcfd';
+}
+
+	//options for styling census data
+	var vectorTileStyling = {
+
+        // A function for styling features dynamically, depending on their properties
+				'ACS-csw04m': function(properties, zoom) {
+            var popden = properties.Pop_Densit;
+            var blockcolor = getColor(popden);
+            return {
+							fill: true,
+							weight: .5,
+							fillColor: blockcolor,
+							color: blockcolor,
+							fillOpacity: .6,
+							opacity: 1
+            }
+        },
+				'cities-6wjp18':  function(properties, zoom){
+            var name = properties.Name;
+					  return {
+							fill: false,
+							weight: .5,
+							color: '#a8a8a8',
+							opacity: 1,
+							dashArray: [4, 4]
+						}
+				}
+
+
+};
+
+//options for styling census data
+var vectorTileHHIStyling = {
+
+			// A function for styling features dynamically, depending on their properties
+			'ACS-csw04m': function(properties, zoom) {
+					var medHHI = properties.MEDIANHHI;
+					var blockcolor = getColorIncome(medHHI);
+					return {
+						fill: true,
+						weight: .5,
+						fillColor: blockcolor,
+						color: blockcolor,
+						fillOpacity: .6,
+						opacity: 1
+					}
+			},
+			'cities-6wjp18':  {
+						fill: false,
+						weight: .5,
+						color: '#a8a8a8',
+						opacity: 1,
+						dashArray: [4, 4]
+			}
+
+
+};
+
+
+var boundaryTileStyling = {
+			// A function for styling features dynamically, depending on their properties
+			'region_lines-68hkb5':  {
+
+						weight: 3,
+						//fillColor: '#f2b648',
+						color: '#888888',
+					//	fillOpacity: .2,
+						opacity: 0.6,
+						dashArray: [4, 4]
+			},
+			'cities-6wjp18':  {
+						fill: false,
+						weight: .5,
+						color: '#a8a8a8',
+						opacity: 0.8,
+						dashArray: [4, 4]
+			}
+
+};
+
+
+
+
+
+//parcels - strahanjen.a1xef55p
+//https://b.tiles.mapbox.com/v4/strahanjen.7gnxxet8,mapbox.mapbox-streets-v7/9/122/183.vector.pbf?access_token=pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw
+	var totpoplayer = L.vectorGrid.protobuf("https://a.tiles.mapbox.com/v4/strahanjen.6q83axlk,strahanjen.a28titpm/{z}/{x}/{y}.vector.pbf?access_token={token}", {
+	    vectorTileLayerStyles: vectorTileStyling,
+	    token: "pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw"
+	});
+
+	var medHHINClayer = L.vectorGrid.protobuf("https://a.tiles.mapbox.com/v4/strahanjen.6q83axlk,strahanjen.a28titpm/{z}/{x}/{y}.vector.pbf?access_token={token}", {
+			vectorTileLayerStyles: vectorTileHHIStyling,
+			token: "pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw"
+	});
+
+//boundaries
+//https://a.tiles.mapbox.com/v4/strahanjen.a28titpm,strahanjen.6mhpx7ne/6/15/23.vector.pbf?access_token=pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw
+//https://a.tiles.mapbox.com/v4/strahanjen.a28titpm,strahanjen.crsx1fxo/6/14/22.vector.pbf?access_token=pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw
+//https://b.tiles.mapbox.com/v4/strahanjen.a28titpm,strahanjen.2eiaeynz/6/15/22.vector.pbf?access_token=pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw
+	var boundaries = L.vectorGrid.protobuf("https://a.tiles.mapbox.com/v4/strahanjen.a28titpm,strahanjen.6mhpx7ne/{z}/{x}/{y}.vector.pbf?access_token={token}", {
+	    vectorTileLayerStyles: boundaryTileStyling,
+	    token: "pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw"
+	}).addTo(map);
+
+
+	var divestBranchIcon = L.icon({
+		iconUrl: 'images/branch_divest.png',
+		iconSize: [32, 32],
+		iconAnchor: [16, 16],
+		popupAnchor: [0, -18]
+	});
+
+	var newBranchIcon = L.icon({
+		iconUrl: 'images/branch_new.png',
+		iconSize: [32, 32],
+		iconAnchor: [16, 16],
+		popupAnchor: [0, -18]
+	});
+
+	var newBranchDeferIcon = L.icon({
+		iconUrl: 'images/branch_new_defer.png',
+		iconSize: [32, 32],
+		iconAnchor: [16, 16],
+		popupAnchor: [0, -18]
+	});
+
+	var holdBranchIcon = L.icon({
+		iconUrl: 'images/branch_hold.png',
+		iconSize: [32, 32],
+		iconAnchor: [16, 16],
+		popupAnchor: [0, -18]
+	});
+	var investBranchIcon = L.icon({
+		iconUrl: 'images/branch_invest.png',
+		iconSize: [32, 32],
+		iconAnchor: [16, 16],
+		popupAnchor: [0, -18]
+	});
+	var divestCampIcon = L.icon({
+		iconUrl: 'images/camp_divest.png',
+		iconSize: [24, 28],
+		iconAnchor: [12, 14],
+		popupAnchor: [0, -18]
+	});
+	var newCampIcon = L.icon({
+		iconUrl: 'images/camp_new.png',
+		iconSize: [24, 28],
+		iconAnchor: [12, 14],
+		popupAnchor: [0, -18]
+	});
+	var holdCampIcon = L.icon({
+		iconUrl: 'images/camp_hold.png',
+		iconSize: [24, 28],
+		iconAnchor: [12, 14],
+		popupAnchor: [0, -18]
+	});
+	var investCampIcon = L.icon({
+		iconUrl: 'images/camp_invest.png',
+		iconSize: [24, 28],
+		iconAnchor: [12, 14],
+		popupAnchor: [0, -18]
+	});
+	var overnightCampIcon = L.icon({
+		iconUrl: 'images/camp_overnight.png',
+		iconSize: [24, 24],
+		iconAnchor: [-9, 12],
+		popupAnchor: [12, -14]
+	});
+
+var branchesLayer = L.geoJson(branches,{
+    onEachFeature:onEachBranch
+});
+
+var campsLayer = L.geoJson(camps,{
+    onEachFeature:onEachCamp
+});
+
+var overnightCampsLayer = L.geoJson(overnightCamps,{
+    onEachFeature:onEachOvernightCamp
+});
+
+var branchesNewLayer = L.geoJson(branches_new,{
+    onEachFeature:onEachNewBranch
+});
+
+
+
+function filterByRegion(region) {
+
+	switch(region) {
+			case "All":
+			var branchesLayer = L.geoJson(branches,{
+					onEachFeature:onEachBranch
+			});
+
+			var campsLayer = L.geoJson(camps,{
+					onEachFeature:onEachCamp
+			});
+
+			var overnightCampsLayer = L.geoJson(overnightCamps,{
+					onEachFeature:onEachOvernightCamp
+			});
+
+			var branchesNewLayer = L.geoJson(branches_new,{
+					onEachFeature:onEachNewBranch
+			});
+			break;
+			case "North":
+			L.geoJSON(someFeatures, {
+    filter: function(feature, layer) {
+        return feature.properties.show_on_map;
+    }
+}).addTo(map);
+
+			break;
+		  case "South":
+
+		  break;
+			case "East":
+
+		  break;
+			case "West":
+
+		  break;
+	}
+
+
+
+}
+
+//filterByRegion("All");
+
+function getDrivePolygon(time,lat,lon,drivePolyColor,pointtype) {
+
+		var url='https://matrix.mapzen.com/isochrone?api_key=mapzen-RjV32c8&json={"locations":[{"lat":"' + lat + '","lon":"' + lon + '"}],"costing":"auto","denoise":0.3,"polygons":true,"generalize":50,"costing_options":{"pedestrian":{"use_ferry":0}},"contours":[{"time":' + time + '}]}';
+	//  map.spin(true);
+	//construct URL here
+	//  String(e.latlng.lng)
+					//  String(e.latlng.lng)
+
+		$.ajax({
+				type: "GET",
+				url: url,
+				jsonp: "callback",
+				success: function(geojson){
+
+				var Style = {
+					fill: true,
+					weight: 1,
+					fillColor: drivePolyColor,
+					color: drivePolyColor,
+					fillOpacity: 0.1,
+					opacity: 1
+				};
+
+				var drivetimes = L.geoJson(geojson,{
+						style: Style,
+						onEachFeature: onEachDrivePoly
+				});
+
+
+					switch(pointtype) {
+			        case "branch":
+										driveGroupBranch.addLayer(drivetimes);
+			            break;
+			        case "camp":
+								   driveGroupCamp.addLayer(drivetimes);
+			            break;
+			    }
+
+				}
+		})
+
+}
+
+function clearDriveTimes() {
+	driveGroupBranch.clearLayers();
+	driveGroupCamp.clearLayers();
+}
+
+
+function onEachDrivePoly(feature, layer) {
+	if (feature.properties && feature.properties.contour) {
+		      popupContent = "<p>" + feature.properties.contour + " Min Drive Time Polygon</p>";
+					popupContent += "<input type='button' value='Delete this polygon' class='polygon-delete-button'/>";
+	        layer.bindPopup(popupContent);
+					//layer.on("popupopen", onPopupOpen);
+					layer.on('popupopen', function(e){
+
+								var layer = e.target;
+
+//alert("layer id: " + driveGroupBranch.getLayerID(layer););
+
+
+
+
+								// To remove marker on click of delete button in the popup of marker
+								$(".polygon-delete-button:visible").click(function () {
+									//if (driveGroupBranch.hasLayer(this._leaflet_id) == true) {
+									//	alert("has layer");
+									
+									driveGroupBranch.removeLayer(layer);
+									//} else {
+									//	alert("doesn't have layer");
+								// driveGroupCamp.removeLayer(layer);
+								 //}
+									//layer.remove();
+								});
+            });
+
+	}
+}
+
+
+
+function onEachBranch(feature, layer) {
+
+    var lon = feature.geometry.coordinates[0];
+    var lat = feature.geometry.coordinates[1];
+
+
+    var popupContent;
+    var marker;
+		var drivePolyColor;
+
+
+    switch(feature.properties.ICON) {
+        case "INVEST":
+				    popupContent =  "<h2 class='sectiontitleGREEN'>Recommendation: Invest</h2>";
+            marker = L.marker([lat, lon], {icon: investBranchIcon});
+						drivePolyColor = "#00b422";
+            break;
+        case "DIVEST":
+				    popupContent =  "<h2 class='sectiontitleRED'>Recommendation: " + feature.properties.POSITION + "</h2>";
+            marker = L.marker([lat, lon], {icon: divestBranchIcon});
+						drivePolyColor = "#ed0000";
+            break;
+        default:
+				    popupContent =  "<h2 class='sectiontitleYELLOW'>Recommendation: Hold</h2>";
+						drivePolyColor = "#f9c032";
+            marker = L.marker([lat, lon], {icon: holdBranchIcon});
+
+    }
+		popupContent +=  "<b>" + feature.properties.BRANCH_NAME + "</b>";
+		popupContent += "<br />Project Budget: " + feature.properties.PROJ_BUDGET;
+		popupContent += "<br />&#8710; Units: " + feature.properties.Change_UNITS;
+		popupContent += "<br />&#8710; Mem. Revenue: $" + feature.properties.CHANGE_MEM_REVENUE;
+		popupContent += "<br />Cost / Unit: " + feature.properties.COST_UNIT;
+		popupContent += "<br />Notes: " + feature.properties.INVESTMENT_NOTES;
+		popupContent +=  "<h4 class='sectiontitle'>Metrics: Utilization, Penetration, Performance</h4>";
+		popupContent += "Units: " + feature.properties.Units;
+		popupContent += " | PMA Units: " + feature.properties.PMA_Units;
+		popupContent += "<br />PMA Households: " + feature.properties.PMA_Households;
+		popupContent += " | PMA Penetration: " + feature.properties.PMA_Penetration;
+		popupContent += "<br />Memb. Trend (3-YR): " + feature.properties.Memb_Trend_3yr;
+		popupContent += "<br />Pop. Trend: " + feature.properties.Pop_trend;
+		popupContent += "<br />Swipes/Day: " + feature.properties.Swipes_day;
+		popupContent +=  "<h4 class='sectiontitle'>Metrics - Facility &amp; Potential</h4>";
+		popupContent += "Age(yrs): " + feature.properties.Age_years;
+		popupContent += " | Size (SF): " + feature.properties.size_sf;
+		popupContent += " | SF of FC: " + feature.properties.SF_of_FC;
+		popupContent += "<br />Last Improvement: " + feature.properties.Last_Improvement;
+		popupContent += "<br />Pot. Addtl. Units: " + feature.properties.Pot_addtl_units;
+		popupContent += "<br />Proj. Rev.: $" + feature.properties.Proj_rev;
+		popupContent += "<br />Dev. Pot. (1-5): " + feature.properties.Dev_Pot;
+		popupContent += " | Loc. & Vsby. (1-5): " + feature.properties.Loc_Vsby;
+
+		switch(feature.properties.drive_poly_options) {
+				case "A":
+						popupContent +="<h4 class='sectiontitle'>Show drive time polygons: <a onclick=getDrivePolygon(8," + lat + "," + lon + ",'" + drivePolyColor + "','branch'); style='color:#ffffff; cursor: pointer; cursor: hand;'> 8 min</a> | <a onclick=getDrivePolygon(10," + lat + "," + lon + ",'" + drivePolyColor + "','branch'); style='color:#ffffff; cursor: pointer; cursor: hand;'> 10 min</a> | <a onclick=getDrivePolygon(12," + lat + "," + lon + ",'" + drivePolyColor + "','branch'); style='color:#ffffff; cursor: pointer; cursor: hand;'> 12 min</a></h4>";
+						break;
+				case "B":
+						popupContent +="<h4 class='sectiontitle'>Show drive time polygons: <a onclick=getDrivePolygon(10," + lat + "," + lon + ",'" + drivePolyColor + "','branch'); style='color:#ffffff; cursor: pointer; cursor: hand;'> 10 min</a> | <a onclick=getDrivePolygon(12," + lat + "," + lon + ",'" + drivePolyColor + "','branch'); style='color:#ffffff; cursor: pointer; cursor: hand;'> 12 min</a> | <a onclick=getDrivePolygon(15," + lat + "," + lon + ",'" + drivePolyColor + "','branch'); style='color:#ffffff; cursor: pointer; cursor: hand;'> 15 min</a></h4>";
+						break;
+
+				case "C":
+						popupContent +="<h4 class='sectiontitle'>Show drive time polygons: <a onclick=getDrivePolygon(12," + lat + "," + lon + ",'" + drivePolyColor + "','branch'); style='color:#ffffff; cursor: pointer; cursor: hand;'> 12 min</a> | <a onclick=getDrivePolygon(15," + lat + "," + lon + ",'" + drivePolyColor + "','branch'); style='color:#ffffff; cursor: pointer; cursor: hand;'> 15 min</a> | <a onclick=getDrivePolygon(18," + lat + "," + lon + ",'" + drivePolyColor + "','branch'); style='color:#ffffff; cursor: pointer; cursor: hand;'> 18 min</a></h4>";
+						break;
+				default:
+					  popupContent +="<h4 class='sectiontitle'>Show drive time polygons: <a onclick=getDrivePolygon(10," + lat + "," + lon + ",'" + drivePolyColor + "','branch'); style='color:#ffffff; cursor: pointer; cursor: hand;'> 10 min</a> | <a onclick=getDrivePolygon(15," + lat + "," + lon + ",'" + drivePolyColor + "','branch'); style='color:#ffffff; cursor: pointer; cursor: hand;'> 15 min</a> | <a onclick=getDrivePolygon(20," + lat + "," + lon + ",'" + drivePolyColor + "','branch'); style='color:#ffffff; cursor: pointer; cursor: hand;'> 20 min</a></h4>";
+
+		}
+
+
+		switch(feature.properties.ICON) {
+        case "INVEST":
+						marker.bindPopup(popupContent, {maxWidth : 350});
+            branchesGroupInvest.addLayer(marker);
+            break;
+        case "DIVEST":
+						marker.bindPopup(popupContent, {maxWidth : 350});
+            branchesGroupDivest.addLayer(marker);
+            break;
+        default:
+           branchesGroupHold.addLayer(marker);
+
+    }
+
+}
+
+function onEachNewBranch(feature, layer) {
+
+    var lon = feature.geometry.coordinates[0];
+    var lat = feature.geometry.coordinates[1];
+
+    var popupContent;
+    var marker;
+
+		if (feature.properties.Position =="Invest") {
+		popupContent =  "<h2 class='sectiontitleBLUE'>Recommendation: " + feature.properties.Position + "</h2>";
+    marker = L.marker([lat, lon], {icon: newBranchIcon});
+	  } else {
+		popupContent =  "<h2 class='sectiontitleYELLOW'>Recommendation: " + feature.properties.Position + "</h2>";
+		marker = L.marker([lat, lon], {icon: newBranchDeferIcon});
+	  }
+		popupContent +=  "<b>New Location: " + feature.properties.NEW_LOCATIONS + "</b>";
+		popupContent += "<br />Projected Budget: " + feature.properties.PROJ_BUDGET;
+		popupContent += "<br />Projected Penetration Rate: " + feature.properties.PROJ_PEN_RATE;
+		popupContent += "<br />Modeled Units " + feature.properties.MODELED_UNITS;
+		popupContent += "<br />Projected Mem. Revenue $" + feature.properties.PROJ_MEM_REV;
+		popupContent += "<br />Cost / Unit: " + feature.properties.COST_UNIT;
+		popupContent += "<br />Projected Facility Size " + feature.properties.PROJ_FACILITY_SIZE;
+		popupContent += "<br />Households: " + feature.properties.HOUSEHOLDS;
+		popupContent += "<br />Modeled Drivetime: " + feature.properties.DRIVE_TIME;
+    drivePolyColor = "#6299d3"
+		switch(feature.properties.drive_poly_options) {
+				case "A":
+						popupContent +="<h4 class='sectiontitle'>Show drive time polygons: <a onclick=getDrivePolygon(8," + lat + "," + lon + ",'" + drivePolyColor + "','branch'); style='color:#ffffff; cursor: pointer; cursor: hand;'> 8 min</a> | <a onclick=getDrivePolygon(10," + lat + "," + lon + ",'" + drivePolyColor + "','branch'); style='color:#ffffff; cursor: pointer; cursor: hand;'> 10 min</a> | <a onclick=getDrivePolygon(12," + lat + "," + lon + ",'" + drivePolyColor + "','branch'); style='color:#ffffff; cursor: pointer; cursor: hand;'> 12 min</a></h4>";
+						break;
+				case "B":
+						popupContent +="<h4 class='sectiontitle'>Show drive time polygons: <a onclick=getDrivePolygon(10," + lat + "," + lon + ",'" + drivePolyColor + "','branch'); style='color:#ffffff; cursor: pointer; cursor: hand;'> 10 min</a> | <a onclick=getDrivePolygon(12," + lat + "," + lon + ",'" + drivePolyColor + "','branch'); style='color:#ffffff; cursor: pointer; cursor: hand;'> 12 min</a> | <a onclick=getDrivePolygon(15," + lat + "," + lon + ",'" + drivePolyColor + "','branch'); style='color:#ffffff; cursor: pointer; cursor: hand;'> 15 min</a></h4>";
+						break;
+
+				case "C":
+						popupContent +="<h4 class='sectiontitle'>Show drive time polygons: <a onclick=getDrivePolygon(12," + lat + "," + lon + ",'" + drivePolyColor + "','branch'); style='color:#ffffff; cursor: pointer; cursor: hand;'> 12 min</a> | <a onclick=getDrivePolygon(15," + lat + "," + lon + ",'" + drivePolyColor + "','branch'); style='color:#ffffff; cursor: pointer; cursor: hand;'> 15 min</a> | <a onclick=getDrivePolygon(18," + lat + "," + lon + ",'" + drivePolyColor + "','branch'); style='color:#ffffff; cursor: pointer; cursor: hand;'> 18 min</a></h4>";
+						break;
+				default:
+					  popupContent +="<h4 class='sectiontitle'>Show drive time polygons: <a onclick=getDrivePolygon(10," + lat + "," + lon + ",'" + drivePolyColor + "','branch'); style='color:#ffffff; cursor: pointer; cursor: hand;'> 10 min</a> | <a onclick=getDrivePolygon(15," + lat + "," + lon + ",'" + drivePolyColor + "','branch'); style='color:#ffffff; cursor: pointer; cursor: hand;'> 15 min</a> | <a onclick=getDrivePolygon(20," + lat + "," + lon + ",'" + drivePolyColor + "','branch'); style='color:#ffffff; cursor: pointer; cursor: hand;'> 20 min</a></h4>";
+
+		}
+
+    marker.bindPopup(popupContent, {maxWidth : 350});
+		branchesGroupNew.addLayer(marker);
+}
+
+function onEachCamp(feature, layer) {
+
+    var lon = feature.geometry.coordinates[0];
+    var lat = feature.geometry.coordinates[1];
+
+    var popupContent;
+    var marker;
+
+    switch(feature.properties.ICON) {
+				case "holdCampIcon":
+				        popupContent =  "<h2 class='sectiontitleYELLOW'>Recommendation: Hold</h2>";
+								drivePolyColor = "#f9c032";
+								marker = L.marker([lat, lon], {icon: holdCampIcon});
+								break;
+				case "investCampIcon":
+				        popupContent =  "<h2 class='sectiontitleGREEN'>Recommendation: Invest</h2>";
+								marker = L.marker([lat, lon], {icon: investCampIcon});
+								drivePolyColor = "#00b422";
+								break;
+			  case "divestCampIcon":
+				        popupContent =  "<h2 class='sectiontitleRED'>Recommendation: Merge</h2>";
+								drivePolyColor = "#ed0000";
+								marker = L.marker([lat, lon], {icon: divestCampIcon});
+								break;
+				case "newCampIcon":
+				        popupContent =  "<h2 class='sectiontitleBLUE'>Recommendation: New Location</h2>";
+								marker = L.marker([lat, lon], {icon: newCampIcon});
+								drivePolyColor = "#6299d3";
+								break;
+        default:
+            marker = L.marker([lat, lon], {icon: holdCampIcon});
+    }
+		popupContent +=  "<b>" + feature.properties.Camp + "</b>";
+		popupContent += "<br />Project Allowance: " + feature.properties.Allowance;
+		popupContent += "<br />Size: " + feature.properties.SIZE;
+		popupContent += "<br />Owned by YMCA: " + feature.properties.Owned;
+		popupContent += "<br />2016 Campers: " + feature.properties.Campers;
+		popupContent += "<br />2016 Camper Sessions: " + feature.properties.Camper_Sessions;
+		popupContent += "<br />2016 Utilization % Sessions: " + feature.properties.Util_pct_sessions;
+		popupContent += "<br />20-min Pop. Age 5-14: " + feature.properties.Twenty_MinPop;
+		popupContent += "<br />30-min Pop. Age 5-14: " + feature.properties.Thirty_MinPop;
+		popupContent += "<br />Notes: " + feature.properties.Notes;
+		popupContent +="<h4 class='sectiontitle'>Show drive time polygons: <a onclick=getDrivePolygon(10," + lat + "," + lon + ",'" + drivePolyColor + "','camp'); style='color:#ffffff; cursor: pointer; cursor: hand;'> 10 min</a> | <a onclick=getDrivePolygon(15," + lat + "," + lon + ",'" + drivePolyColor + "','camp'); style='color:#ffffff; cursor: pointer; cursor: hand;'> 15 min</a> | <a onclick=getDrivePolygon(20," + lat + "," + lon + ",'" + drivePolyColor + "','camp'); style='color:#ffffff; cursor: pointer; cursor: hand;'> 20 min</a></h4>";
+
+
+
+		switch(feature.properties.ICON) {
+				case "holdCampIcon":
+				campsGroupHold.addLayer(marker);
+								break;
+				case "investCampIcon":
+							marker.bindPopup(popupContent, {maxWidth : 350});
+							campsGroupInvest.addLayer(marker);
+								break;
+				case "divestCampIcon":
+				       marker.bindPopup(popupContent, {maxWidth : 350});
+               campsGroupDivest.addLayer(marker);
+								break;
+				case "newCampIcon":
+				        marker.bindPopup(popupContent, {maxWidth : 350});
+                campsGroupNew.addLayer(marker);
+								break;
+				default:
+						campsGroupHold.addLayer(marker);
+		}
+
+}
+
+function onEachOvernightCamp(feature, layer) {
+
+    var lon = feature.geometry.coordinates[0];
+    var lat = feature.geometry.coordinates[1];
+    drivePolyColor = "#00b422";
+    var popupContent;
+    var marker;
+		popupContent =  "<b>" + feature.properties.Property_Name + "</b>";
+		popupContent += "<br />Current Use: " + feature.properties.Current_Use;
+		popupContent += "<br />Total Acreage - Land: " + feature.properties.Acreage_Land;
+		popupContent += "<br />Total Sq.Ft. -Buildings: " + feature.properties.BLDGSQFT;
+		popupContent += "<br />Owned by YMCA: " + feature.properties.Own_Lease;
+    marker = L.marker([lat, lon], {icon: overnightCampIcon});
+		popupContent +="<h4 class='sectiontitle'>Show drive time polygons: <a onclick=getDrivePolygon(10," + lat + "," + lon + ",'" + drivePolyColor + "','camp'); style='color:#ffffff; cursor: pointer; cursor: hand;'> 10 min</a> | <a onclick=getDrivePolygon(15," + lat + "," + lon + ",'" + drivePolyColor + "','camp'); style='color:#ffffff; cursor: pointer; cursor: hand;'> 15 min</a> | <a onclick=getDrivePolygon(20," + lat + "," + lon + ",'" + drivePolyColor + "','camp'); style='color:#ffffff; cursor: pointer; cursor: hand;'> 20 min</a></h4>";
+    marker.bindPopup(popupContent, {maxWidth : 350});
+		campsGroupInvest.addLayer(marker);
+}
+
+
+var baseMaps = {
+    "Grayscale": grayscale,
+		"Streets": streets,
+		"Satellite": satellite
+};
+
+var overlayMaps = {
+		"Branches Invest": branchesGroupInvest,
+		"Branches Hold": branchesGroupHold,
+		"Branches Divest": branchesGroupDivest,
+		"Branches New": branchesGroupNew,
+		"Drive Times - Branches": driveGroupBranch,
+		"Camps Invest": campsGroupInvest,
+		"Camps Hold": campsGroupHold,
+		"Camps Divest": campsGroupDivest,
+		"Camps New": campsGroupNew,
+		"Drive Times - Camps": driveGroupCamp,
+		"Population Density": totpoplayer,
+		"Median Household Income": medHHINClayer,
+		"Region & Cities": boundaries
+};
+
+
+
+//https://matrix.mapzen.com/isochrone?api_key=mapzen-xxxxxx&json={"locations":[{"lat":"43.06675586341758","lon":"-89.40384721616283"}],"costing":"auto","denoise":0.3,"polygons":true,"generalize":50,"costing_options":{"pedestrian":{"use_ferry":0}},"contours":[{"time":15},{"time":30},{"time":45},{"time":60}]}
+L.control.layers(baseMaps, overlayMaps).addTo(map);
+
+</script>
+
+
+
+</body>
+</html>
