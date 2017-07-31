@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<title>GRO Recommendations</title>
+
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" integrity="sha512-07I2e+7D8p6he1SIM+1twR5TIrhUQn9+I6yjqD53JQjFiMf8EtC93ty0/5vJTZGF8aAocvHYNEDJajGdNx1IsQ==" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js" integrity="sha512-A7vV8IFfih/D732iSSKi20u/ooOfj/AGehOKq0f4vLT1Zr2Y+RX7C+w8A1gaSasGtRUZpF/NZgzSAu4/Gc41Lg==" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet.vectorgrid@1.2.0"></script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+
+	<style>
+			#map { position:absolute; top:0; bottom:0; width:100%; }
+	</style>
+
+
+</head>
+<body>
+
+<div id='map'></div>
+
+<script src="js/2017_05_13GRORecommendationsMatrices_NoNulls.js" type="text/javascript"></script>
+<script type="text/javascript" src="js/leaflet-control-credits.js"></script>
+<link rel="stylesheet" href="css/leaflet-control-credits.css" />
+
+<script type="text/javascript">
+	var map = L.map('map').setView([45.024, -93.305], 10);
+	var campsGroup = L.layerGroup().addTo(map);
+	var branchesGroup = L.layerGroup().addTo(map);
+	var eightMinDriveGroupBranch = L.layerGroup();
+	var twelveMinDriveGroupBranch = L.layerGroup();
+	var eightMinDriveGroupCamp = L.layerGroup();
+	var twelveMinDriveGroupCamp = L.layerGroup();
+
+/*
+	map.on('click', function (e) {
+    coords= e.latlng.lat + ", " + e.latlng.lng;
+		alert (coords);
+});
+*/
+
+// credits
+L.controlCredits({
+		image: "images/Visible-Cities-Logo-Vert-Color-PNG.png",
+		link: "http://www.visible.city",
+		text: "Interactive mapping<br/>by Visible City",
+		width: 60,
+		height: 167
+}).addTo(map);
+
+//light
+var grayscale =	L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw', {
+		maxZoom: 18,
+		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+			'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+			'Imagery © <a href="http://mapbox.com">Mapbox</a>'
+	}).addTo(map);
+
+	var satellite =	L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v10/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw', {
+			maxZoom: 18,
+			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+				'Imagery © <a href="http://mapbox.com">Mapbox</a>'
+		});
+		//outdoors
+		//https://api.mapbox.com/styles/v1/mapbox/outdoors-v10/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw
+//https://api.mapbox.com/styles/v1/mapbox/streets-v10/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw
+var streets = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/outdoors-v10/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw', {
+		maxZoom: 18,
+		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+			'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+			'Imagery © <a href="http://mapbox.com">Mapbox</a>'
+	});
+
+/*
+	L.tileLayer('https://api.mapbox.com/styles/v1/strahanjen/cj2qpbblp002q2rp32q0rk1vf/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw', {
+		maxZoom: 18,
+		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+			'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+			'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+			id: ''
+	}).addTo(map);
+
+*/
+
+function getColor(d) {
+    return d > 9000 ? '#990000' :
+           d > 7000  ? '#d7301f' :
+           d > 5000  ? '#ef6548' :
+           d > 3000   ? '#fc8d59' :
+           d > 1000   ? '#fdbb84' :
+           d > 500   ? '#fdd49e' :
+					 d > 200   ? '#fee8c8' :
+					 d > 50   ? '#fffdf9' :
+					 d > 5   ? '#ffffff' :
+                      '#ffffff';
+}
+
+function getColorIncome(d) {
+    return d > 173000 ? '#3288bd' :
+           d > 133000  ? '#66c2a5' :
+           d > 105000  ? '#abdda4' :
+           d > 85000   ? '#e6f598' :
+           d > 69000   ? '#fee08b' :
+           d > 56000   ? '#fdae61' :
+					 d > 44000   ? '#f46d43' :
+					 d > 28000   ? '#d53e4f' :
+                      '#ab3140';
+}
+
+	//options for styling census data
+	var vectorTileStyling = {
+
+        // A function for styling features dynamically, depending on their properties
+				'ACS-csw04m': function(properties, zoom) {
+            var popden = properties.Pop_Densit;
+            var blockcolor = getColor(popden);
+            return {
+							fill: true,
+							weight: .5,
+							fillColor: blockcolor,
+							color: blockcolor,
+							fillOpacity: .6,
+							opacity: 1
+            }
+        },
+				'cities-6wjp18':  function(properties, zoom){
+            var name = properties.Name;
+					  return {
+							fill: false,
+							weight: .5,
+							color: '#a8a8a8',
+							opacity: 1,
+							dashArray: [4, 4]
+						}
+				}
+
+
+};
+
+//options for styling census data
+var vectorTileHHIStyling = {
+
+			// A function for styling features dynamically, depending on their properties
+			'ACS-csw04m': function(properties, zoom) {
+					var medHHI = properties.MEDIANHHI;
+					var blockcolor = getColorIncome(medHHI);
+					return {
+						fill: true,
+						weight: .5,
+						fillColor: blockcolor,
+						color: blockcolor,
+						fillOpacity: .6,
+						opacity: 1
+					}
+			},
+			'cities-6wjp18':  {
+						fill: false,
+						weight: .5,
+						color: '#a8a8a8',
+						opacity: 1,
+						dashArray: [4, 4]
+			}
+
+
+};
+
+
+var boundaryTileStyling = {
+			// A function for styling features dynamically, depending on their properties
+			'regions_new-3dalmb':  {
+						fill: false,
+						weight: 3,
+						//fillColor: '#f2b648',
+						color: '#888888',
+					//	fillOpacity: .2,
+						opacity: 0.6,
+						dashArray: [4, 4]
+			},
+			'cities-6wjp18':  {
+						fill: false,
+						weight: .5,
+						color: '#a8a8a8',
+						opacity: 0.8,
+						dashArray: [4, 4]
+			}
+
+};
+
+
+
+
+
+//parcels - strahanjen.a1xef55p
+//https://b.tiles.mapbox.com/v4/strahanjen.7gnxxet8,mapbox.mapbox-streets-v7/9/122/183.vector.pbf?access_token=pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw
+	var totpoplayer = L.vectorGrid.protobuf("https://a.tiles.mapbox.com/v4/strahanjen.6q83axlk,strahanjen.a28titpm/{z}/{x}/{y}.vector.pbf?access_token={token}", {
+	    vectorTileLayerStyles: vectorTileStyling,
+	    token: "pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw"
+	});
+
+	var medHHINClayer = L.vectorGrid.protobuf("https://a.tiles.mapbox.com/v4/strahanjen.6q83axlk,strahanjen.a28titpm/{z}/{x}/{y}.vector.pbf?access_token={token}", {
+			vectorTileLayerStyles: vectorTileHHIStyling,
+			token: "pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw"
+	});
+
+//boundaries
+//https://a.tiles.mapbox.com/v4/strahanjen.a28titpm,strahanjen.crsx1fxo/6/14/22.vector.pbf?access_token=pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw
+//https://b.tiles.mapbox.com/v4/strahanjen.a28titpm,strahanjen.2eiaeynz/6/15/22.vector.pbf?access_token=pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw
+	var boundaries = L.vectorGrid.protobuf("https://a.tiles.mapbox.com/v4/strahanjen.a28titpm,strahanjen.crsx1fxo/{z}/{x}/{y}.vector.pbf?access_token={token}", {
+	    vectorTileLayerStyles: boundaryTileStyling,
+	    token: "pk.eyJ1Ijoic3RyYWhhbmplbiIsImEiOiJjaXNseGNqc2gwYXVzMnRvY2NrODNsamwwIn0.hIq4dxJCPWiZGJrKAW41Dw"
+	}).addTo(map);
+
+
+	var divestBranchIcon = L.icon({
+		iconUrl: 'images/branch_divest.png',
+		iconSize: [32, 32],
+		iconAnchor: [16, 16],
+		popupAnchor: [0, -28]
+	});
+
+	var newBranchIcon = L.icon({
+		iconUrl: 'images/branch_new.png',
+		iconSize: [32, 32],
+		iconAnchor: [16, 16],
+		popupAnchor: [0, -28]
+	});
+
+	var holdBranchIcon = L.icon({
+		iconUrl: 'images/branch_hold.png',
+		iconSize: [32, 32],
+		iconAnchor: [16, 16],
+		popupAnchor: [0, -28]
+	});
+	var investBranchIcon = L.icon({
+		iconUrl: 'images/branch_invest.png',
+		iconSize: [32, 32],
+		iconAnchor: [16, 16],
+		popupAnchor: [0, -28]
+	});
+	var divestCampIcon = L.icon({
+		iconUrl: 'images/camp_divest.png',
+		iconSize: [24, 28],
+		iconAnchor: [12, 14],
+		popupAnchor: [0, -28]
+	});
+	var newCampIcon = L.icon({
+		iconUrl: 'images/camp_new.png',
+		iconSize: [24, 28],
+		iconAnchor: [12, 14],
+		popupAnchor: [0, -28]
+	});
+	var holdCampIcon = L.icon({
+		iconUrl: 'images/camp_hold.png',
+		iconSize: [24, 28],
+		iconAnchor: [12, 14],
+		popupAnchor: [0, -28]
+	});
+	var investCampIcon = L.icon({
+		iconUrl: 'images/camp_invest.png',
+		iconSize: [24, 28],
+		iconAnchor: [12, 14],
+		popupAnchor: [0, -28]
+	});
+	var overnightCampIcon = L.icon({
+		iconUrl: 'images/camp_overnight.png',
+		iconSize: [24, 24],
+		iconAnchor: [12, 12],
+		popupAnchor: [0, -28]
+	});
+
+var branchesLayer = L.geoJson(branches,{
+    onEachFeature:onEachBranch
+});
+
+var campsLayer = L.geoJson(camps,{
+    onEachFeature:onEachCamp
+});
+
+var overnightCampsLayer = L.geoJson(overnightCamps,{
+    onEachFeature:onEachOvernightCamp
+});
+
+var branchesNewLayer = L.geoJson(branches_new,{
+    onEachFeature:onEachNewBranch
+});
+
+
+function getDrivePolygon(time,lat,lon,pointtype) {
+
+		var url='https://matrix.mapzen.com/isochrone?api_key=mapzen-RjV32c8&json={"locations":[{"lat":"' + lat + '","lon":"' + lon + '"}],"costing":"auto","denoise":0.3,"polygons":true,"generalize":50,"costing_options":{"pedestrian":{"use_ferry":0}},"contours":[{"time":' + time + '}]}';
+	//  map.spin(true);
+	//construct URL here
+	//  String(e.latlng.lng)
+					//  String(e.latlng.lng)
+
+		$.ajax({
+				type: "GET",
+				url: url,
+				jsonp: "callback",
+				success: function(geojson){
+					var drivetimes = L.geoJson(geojson,{
+							//onEachFeature:onEachNewBranch
+					});
+					switch(pointtype) {
+			        case "branch":
+							    if (time==8) {
+										eightMinDriveGroupBranch.addLayer(drivetimes);
+									} else {twelveMinDriveGroupBranch.addLayer(drivetimes);}
+
+			            break;
+			        case "camp":
+							if (time==8) {
+								eightMinDriveGroupCamp.addLayer(drivetimes);
+							} else {twelveMinDriveGroupCamp.addLayer(drivetimes);}
+			            break;
+			    }
+
+				}
+		})
+
+}
+
+
+function onEachBranch(feature, layer) {
+
+    var lon = feature.geometry.coordinates[0];
+    var lat = feature.geometry.coordinates[1];
+
+
+    var popupContent;
+    var marker;
+		popupContent =  "<b>" + feature.properties.BRANCH_NAME + "</b>";
+		popupContent += "<br />Projected Budget: " + feature.properties.PROJ_BUDGET;
+		popupContent += "<br />&#8710; Units: " + feature.properties.Change_UNITS;
+		popupContent += "<br />&#8710; Mem. Revenue: " + feature.properties.CHANGE_MEM_REVENUE;
+		popupContent += "<br />Cost / Unit: " + feature.properties.COST_UNIT;
+		popupContent += "<br />Notes: " + feature.properties.INVESTMENT_NOTES;
+    switch(feature.properties.ICON) {
+        case "investBranchIcon":
+            marker = L.marker([lat, lon], {icon: investBranchIcon});
+            break;
+        case "divestBranchIcon":
+            marker = L.marker([lat, lon], {icon: divestBranchIcon});
+						popupContent += "Position: " + feature.properties.POSITION;
+            break;
+        default:
+            marker = L.marker([lat, lon], {icon: holdBranchIcon});
+
+    }
+    marker.bindPopup(popupContent);
+		branchesGroup.addLayer(marker);
+		getDrivePolygon(8,lat,lon,'branch');
+		getDrivePolygon(12,lat,lon,'branch');
+}
+
+function onEachNewBranch(feature, layer) {
+
+    var lon = feature.geometry.coordinates[0];
+    var lat = feature.geometry.coordinates[1];
+
+    var popupContent;
+    var marker;
+		popupContent =  "<b>New Location: " + feature.properties.NEW_LOCATIONS + "</b>";
+		popupContent += "<br />Projected Budget: " + feature.properties.PROJ_BUDGET;
+		popupContent += "<br />Projected Penetration Rate: " + feature.properties.PROJ_PEN_RATE;
+		popupContent += "<br />Modeled Units " + feature.properties.MODELED_UNITS;
+		popupContent += "<br />Projected Mem. Revenue " + feature.properties.PROJ_MEM_REVENUE;
+		popupContent += "<br />Cost / Unit: " + feature.properties.COST_UNIT;
+		popupContent += "<br />Projected Facility Size " + feature.properties.PROJ_FACILITY_SIZE;
+		popupContent += "<br />Households: " + feature.properties.HOUSEHOLDS;
+		popupContent += "<br />Drivetime: " + feature.properties.DRIVE_TIME;
+		popupContent += "<br />Competition Index: " + feature.properties.COMP_INDEX;
+
+    marker = L.marker([lat, lon], {icon: newBranchIcon});
+
+
+    marker.bindPopup(popupContent);
+		branchesGroup.addLayer(marker);
+		getDrivePolygon(8,lat,lon,'branch');
+		getDrivePolygon(12,lat,lon,'branch');
+}
+
+function onEachCamp(feature, layer) {
+
+    var lon = feature.geometry.coordinates[0];
+    var lat = feature.geometry.coordinates[1];
+
+    var popupContent;
+    var marker;
+		popupContent =  "<b>" + feature.properties.Camp + "</b>";
+		popupContent += "<br />Project Allowance: " + feature.properties.Allowance;
+		popupContent += "<br />Size: " + feature.properties.SIZE;
+		popupContent += "<br />Owned by YMCA: " + feature.properties.Owned;
+		popupContent += "<br />2016 Campers: " + feature.properties.Campers;
+		popupContent += "<br />2016 Camper Sessions: " + feature.properties.Camper_Sessions;
+		popupContent += "<br />2016 Utilization % Sessions: " + feature.properties.Util_pct_sessions;
+		popupContent += "<br />20-min Pop. Age 5-14: " + feature.properties.Twenty_MinPop;
+		popupContent += "<br />30-min Pop. Age 5-14: " + feature.properties.Thirty_MinPop;
+		popupContent += "<br />Notes: " + feature.properties.Notes;
+    switch(feature.properties.ICON) {
+				case "holdCampIcon":
+								marker = L.marker([lat, lon], {icon: holdCampIcon});
+								break;
+				case "investCampIcon":
+								marker = L.marker([lat, lon], {icon: investCampIcon});
+								break;
+			  case "divestCampIcon":
+								marker = L.marker([lat, lon], {icon: divestCampIcon});
+								break;
+				case "newCampIcon":
+								marker = L.marker([lat, lon], {icon: newCampIcon});
+								break;
+        default:
+            marker = L.marker([lat, lon], {icon: holdCampIcon});
+    }
+
+    marker.bindPopup(popupContent);
+		campsGroup.addLayer(marker);
+		getDrivePolygon(8,lat,lon,'camp');
+		getDrivePolygon(12,lat,lon,'camp');
+}
+
+function onEachOvernightCamp(feature, layer) {
+
+    var lon = feature.geometry.coordinates[0];
+    var lat = feature.geometry.coordinates[1];
+
+    var popupContent;
+    var marker;
+		popupContent =  "<b>" + feature.properties.Property_Name + "</b>";
+		popupContent += "<br />Branch Affiliation: " + feature.properties.Branc_Affiliation;
+		popupContent += "<br />Current Use: " + feature.properties.Current_Use;
+		popupContent += "<br />Total Acreage - Land: " + feature.properties.Acreage_Land;
+		popupContent += "<br />Total Sq.Ft. -Buildings: " + feature.properties.BLDGSQFT;
+		popupContent += "<br />Owned by YMCA: " + feature.properties.Own_Lease;
+    marker = L.marker([lat, lon], {icon: overnightCampIcon});
+    marker.bindPopup(popupContent);
+		campsGroup.addLayer(marker);
+		getDrivePolygon(8,lat,lon,'camp');
+		getDrivePolygon(12,lat,lon,'camp');
+}
+
+
+var baseMaps = {
+    "Grayscale": grayscale,
+		"Streets": streets,
+		"Satellite": satellite
+};
+
+var overlayMaps = {
+		"Branches": branchesGroup,
+		"8 Minute Drive - Branches": eightMinDriveGroupBranch,
+		"12 Minute Drive - Branches": twelveMinDriveGroupBranch,
+		"Camps": campsGroup,
+		"8 Minute Drive - Camps": eightMinDriveGroupCamp,
+		"12 Minute Drive - Camps": twelveMinDriveGroupCamp,
+		"Population Density": totpoplayer,
+		"Median Household Income": medHHINClayer,
+
+		"Region & Cities": boundaries,
+};
+
+//https://matrix.mapzen.com/isochrone?api_key=mapzen-xxxxxx&json={"locations":[{"lat":"43.06675586341758","lon":"-89.40384721616283"}],"costing":"auto","denoise":0.3,"polygons":true,"generalize":50,"costing_options":{"pedestrian":{"use_ferry":0}},"contours":[{"time":15},{"time":30},{"time":45},{"time":60}]}
+L.control.layers(baseMaps, overlayMaps).addTo(map);
+
+</script>
+
+
+
+</body>
+</html>
